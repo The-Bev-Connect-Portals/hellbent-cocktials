@@ -72,7 +72,7 @@ export const BRAND = {
   // Public Storefront token. Safe to ship client-side: read-only,
   // scoped to public product data. NEVER put an Admin token here.
   shopDomain:      "bro-basket.myshopify.com",
-  storefrontToken: "",             // ← Hellbent Headless storefront token
+  storefrontToken: "9a66fb83a2b5039a596997d1f574aafe",  // Hellbent Headless storefront
   apiVersion:      "2025-01",
 
   sourceTag: "hellbent-portal",
@@ -96,66 +96,5 @@ export const BRAND = {
   //  Prices are $19.95 placeholders. Images are Hellbent's own can
   //  renders, hotlinked from their CDN for the demo only — they move to
   //  Shopify CDN on import.
-  demoProducts: [
-    {
-      id: "demo-dirty-shirley",
-      title: "Hellbent Dirty Shirley",
-      handle: "hellbent-dirty-shirley",
-      tags: ["hellbent", "rtd", "canned-cocktail", "vodka", "cherry", "citrus"],
-      inStock: true,
-      image: "https://www.hellbentcocktails.com/wp-content/uploads/2026/04/dirty-shirly-rev.webp",
-      alt: "Hellbent Dirty Shirley 200 mL can",
-      description:
-        "A cherry-forward sparkling vodka cocktail with a sharp citrus edge. Sweet on the way in, wicked on the way out. 200 mL / 17% ABV.",
-      price: { amount: "19.95", currencyCode: "USD" },
-    },
-    {
-      id: "demo-spicy-rita",
-      title: "Hellbent Spicy Rita",
-      handle: "hellbent-spicy-rita",
-      tags: ["hellbent", "rtd", "canned-cocktail", "tequila", "margarita", "spicy", "lime"],
-      inStock: true,
-      image: "https://www.hellbentcocktails.com/wp-content/uploads/2026/04/spicy-rita-1.webp",
-      alt: "Hellbent Spicy Rita 200 mL can",
-      description:
-        "A tequila margarita built on cool cucumber and lime, with a slow jalape\u00f1o burn behind it. 200 mL / 18% ABV.",
-      price: { amount: "19.95", currencyCode: "USD" },
-    },
-    {
-      id: "demo-corpse-reviver",
-      title: "Hellbent Corpse Reviver",
-      handle: "hellbent-corpse-reviver",
-      tags: ["hellbent", "rtd", "canned-cocktail", "gin", "citrus", "herbal"],
-      inStock: true,
-      image: "https://www.hellbentcocktails.com/wp-content/uploads/2026/04/corpse-reviver-1.webp",
-      alt: "Hellbent Corpse Reviver 200 mL can",
-      description:
-        "A gin cocktail with a lemon bite and a botanical backbone. The classic reviver, canned. 200 mL / 19% ABV.",
-      price: { amount: "19.95", currencyCode: "USD" },
-    },
-    {
-      id: "demo-rum-reaper",
-      title: "Hellbent Rum Reaper",
-      handle: "hellbent-rum-reaper",
-      tags: ["hellbent", "rtd", "canned-cocktail", "rum", "tropical", "spiced"],
-      inStock: true,
-      image: "https://www.hellbentcocktails.com/wp-content/uploads/2026/04/rum-reaper.webp",
-      alt: "Hellbent Rum Reaper 200 mL can",
-      description:
-        "Rum with pineapple and citrus, finishing warm and spiced. Tropical, with a shadow over it. 200 mL / 17% ABV.",
-      price: { amount: "19.95", currencyCode: "USD" },
-    },
-    {
-      id: "demo-coffee-negroni",
-      title: "Hellbent Coffee Negroni",
-      handle: "hellbent-coffee-negroni",
-      tags: ["hellbent", "rtd", "canned-cocktail", "rum", "coffee", "bitter", "negroni"],
-      inStock: true,
-      image: "https://www.hellbentcocktails.com/wp-content/uploads/2026/04/coffee-negroni.webp",
-      alt: "Hellbent Coffee Negroni 200 mL can",
-      description:
-        "Bitter liqueur, rum, sweet vermouth and cold brew coffee. Dark, orange-edged and pleasantly bitter. 200 mL / 17% ABV.",
-      price: { amount: "19.95", currencyCode: "USD" },
-    },
-  ],
+  demoProducts: [],
 };

@@ -56,7 +56,7 @@ const CATALOG_QUERY = `
   query Catalog($q: String!) {
     products(first: 100, query: $q) {
       edges { node {
-        id title handle description tags availableForSale
+        id title handle description descriptionHtml tags availableForSale
         featuredImage { url altText width height }
         priceRange { minVariantPrice { amount currencyCode } }
         variants(first: 10) { edges { node {
@@ -84,6 +84,19 @@ function demoCatalog() {
   }));
 }
 
+function splitDescription(html, fallback) {
+  if (!html) return { description: fallback || "", specs: [] };
+  try {
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    const lead = doc.querySelector("p")?.textContent?.trim();
+    const specs = [...doc.querySelectorAll("li")]
+      .map((li) => li.textContent.trim()).filter(Boolean);
+    return { description: lead || fallback || "", specs };
+  } catch {
+    return { description: fallback || "", specs: [] };
+  }
+}
+
 async function loadCatalog() {
   if (DEMO) return demoCatalog();
 
@@ -101,7 +114,7 @@ async function loadCatalog() {
     title: node.title,
     handle: node.handle,
     tags: node.tags || [],
-    description: node.description || "",
+    ...splitDescription(node.descriptionHtml, node.description),
     inStock: node.availableForSale,
     image: node.featuredImage?.url || null,
     alt: node.featuredImage?.altText || node.title,
@@ -253,6 +266,7 @@ function renderGrid() {
         ${style ? `<span class="card__style">${style}</span>` : ""}
         <h3 class="card__title">${escapeHtml(shortTitle(p.title))}</h3>
         ${p.description ? `<p class="card__note">${escapeHtml(p.description)}</p>` : ""}
+        ${p.specs?.length ? `<p class="card__spec">${escapeHtml(p.specs.join(" \u00b7 "))}</p>` : ""}
         <div class="card__foot">
           <span class="card__price">${money(p.price.amount, p.price.currencyCode)}</span>
         </div>

@@ -5,10 +5,12 @@ built on the Rincon Brewery reference implementation. Checkout runs through the
 Go-To Gifting Shopify store — Go-To Gifting holds the Type 21 license and is the
 seller of record.
 
-> **Status: pitch demo. Hellbent has not signed anything.**
-> The site renders from a hardcoded `demoProducts` array in `brand.config.js`
-> and never calls Shopify. `robots.txt` and an `X-Robots-Tag` header keep it out
-> of search. Remove both at launch.
+> **Status: live against Shopify. Hellbent has not signed anything.**
+> The catalog is pulled from the Go-To Gifting store via the Storefront API and
+> checkout hands off to go-togifting.com for real. It is still a pitch, so
+> `robots.txt` and an `X-Robots-Tag` header keep it out of search — remove both
+> at launch. Demo mode is still available: put products back into
+> `demoProducts` and the portal stops calling Shopify.
 
 Live preview: https://hellbent-cocktails.netlify.app
 
@@ -25,16 +27,17 @@ Live preview: https://hellbent-cocktails.netlify.app
 | `hellbent_matrixify_import.csv` | Matrixify products import — 5 SKUs |
 | `netlify.toml` | Publish `.`, no build command, security + noindex headers |
 
-## Going live — three steps, no code changes
+## Shopify connection — done
 
-1. Import `hellbent_matrixify_import.csv` via Matrixify, then publish the 5
-   products to the Hellbent **Headless** storefront (see below).
-2. Paste that storefront's public token into `storefrontToken`.
-3. Set `demoProducts: []`.
+- Products imported and published to the Hellbent Headless storefront.
+- `storefrontToken` set to the Hellbent storefront's **public** token. This is
+  read-only and scoped to public product data; it is designed to ship in
+  client-side JS. Never put an Admin API token here.
+- `demoProducts: []`, so the portal queries Shopify.
 
-Everything else — vendor filter, tags, cart, checkout handoff — is already
-wired. While `demoProducts` has entries the checkout button says plainly that
-it's a preview rather than throwing an error.
+Verified end to end: 5 products returned, images served from the Shopify CDN,
+filters correct, and checkout redirects to a real `go-togifting.com/checkouts/`
+session.
 
 ## Import: `hellbent_matrixify_import.csv`
 
@@ -68,7 +71,7 @@ Pulled from `hellbentcocktails.com/wp-content/themes/hellbent/style.css`:
 
 ## Open items
 
-- **Prices** — $19.95 across the board is a placeholder. Their own site shows
+- **Prices** — $19.95 across the board is a placeholder, now live in Shopify. Their own site shows
   $34.99 on Rum Reaper (likely a 4-pack); every other price field is empty.
 - **Descriptions** — written for the demo, not Hellbent's copy. Replace before
   this is treated as final.
@@ -90,3 +93,5 @@ backported to `Rincon_brewery` so the two stay in sync:
 4. `shortTitle` also strips a bare `"Brand "` prefix, not just `"Brand - "`
 5. Checkout states plainly that it's a preview in demo mode
 6. Blank `supportPhone` falls back to the support email in error text
+7. `descriptionHtml` split into a lead paragraph (`.card__note`) and a spec
+   line (`.card__spec`) built from the description's `<li>` items
