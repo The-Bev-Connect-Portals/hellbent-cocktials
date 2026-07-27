@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Ready-to-drink cocktails with a wicked twist. Shipped to your door.">
+<title>Shop</title>
+<link rel="icon" type="image/png" href="/assets/favicon.png">
+<link rel="stylesheet" href="/assets/styles.css">
+</head>
+<body>
+
+<div class="announce" id="announce"></div>
+
+<header class="masthead">
+  <div class="masthead__inner">
+    <a class="masthead__logo" href="/">
+      <img id="brand-logo" alt="">
+      <span class="masthead__name" id="brand-name"></span>
+    </a>
+    <span class="masthead__spacer"></span>
+    <a class="masthead__link" id="back-link" href="#"></a>
+    <button class="cart-btn" id="cart-open" type="button" aria-haspopup="dialog">
+      Cart
+      <span class="cart-btn__count" id="cart-count" hidden>0</span>
+    </button>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <p class="hero__kicker" id="hero-kicker"></p>
+    <h1 class="hero__title" id="hero-title"></h1>
+    <p class="hero__tagline" id="hero-tagline"></p>
+  </section>
+
+  <div class="shell">
+    <nav class="filters" aria-label="Filter by style">
+      <h2 class="filters__heading">Style</h2>
+      <ul class="filters__list" id="filters"></ul>
+    </nav>
+    <section id="grid" aria-live="polite" aria-busy="true"></section>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="footer__inner">
+    <p class="footer__legal" id="footer-legal"></p>
+    <span class="masthead__spacer"></span>
+    <p>&copy; <span id="footer-year"></span></p>
+  </div>
+</footer>
+
+<div class="scrim" id="scrim" data-open="false"></div>
+
+<aside class="drawer" id="drawer" data-open="false" role="dialog"
+       aria-modal="true" aria-labelledby="drawer-title" aria-hidden="true">
+  <div class="drawer__head">
+    <h2 class="drawer__title" id="drawer-title">Your Cart</h2>
+    <button class="drawer__close" id="drawer-close" type="button" aria-label="Close cart">&times;</button>
+  </div>
+
+  <div class="drawer__body" id="drawer-body"></div>
+
+  <div class="drawer__foot" id="drawer-foot" hidden>
+    <div class="drawer__error" id="drawer-error" role="alert" hidden></div>
+    <div class="drawer__total">
+      <span>Subtotal</span>
+      <span id="cart-total">—</span>
+    </div>
+    <p class="drawer__tax">Shipping and tax calculated at checkout.</p>
+    <button class="checkout-btn" id="checkout" type="button">Checkout</button>
+    <p class="handoff" id="handoff"></p>
+  </div>
+</aside>
+
+<script type="module" src="/assets/app.js"></script>
+</body>
+</html>

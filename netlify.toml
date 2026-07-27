@@ -1,0 +1,23 @@
+[build]
+  publish = "."
+  command = ""
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # Pitch demo — Hellbent has not signed. Drop this line at launch.
+    X-Robots-Tag = "noindex, nofollow"
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
+
+# brand.config.js changes per deploy — don't let it go stale in a CDN.
+[[headers]]
+  for = "/brand.config.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"

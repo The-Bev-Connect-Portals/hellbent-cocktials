@@ -1,0 +1,4 @@
+# Pitch demo — Hellbent is not a signed client.
+# Remove this file (and the X-Robots-Tag header in netlify.toml) at launch.
+User-agent: *
+Disallow: /
