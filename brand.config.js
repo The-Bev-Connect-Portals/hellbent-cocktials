@@ -11,6 +11,15 @@ export const BRAND = {
   name: "Hellbent",
   vendorTag: "Hellbent",           // MUST match Shopify `vendor` exactly
   logo: "/assets/logo.png",
+
+  // Hero wordmark. Replaces the word "Hellbent" in the H1 with the logo image.
+  // Currently reusing assets/logo.png — swap if their team sends a wordmark cut
+  // without the "Cocktails & Evil Spirits" lockup, which reads better inline.
+  heroMark: "/assets/logo.png",
+
+  // Optional claim shown beside the nav. `icon` is their artwork; until it
+  // arrives this renders as a text badge rather than a stand-in glyph.
+  headerBadge: { label: "Two Cocktails per Can", icon: null },
   logoIncludesName: true,          // wordmark already reads "HELLBENT"
   favicon: "/assets/favicon.png",
 
@@ -75,7 +84,6 @@ export const BRAND = {
     { label: "Tequila",       tag: "tequila" },
     { label: "Gin",           tag: "gin" },
     { label: "Rum",           tag: "rum" },
-    { label: "Spicy",         tag: "spicy" },
     { label: "Coffee",        tag: "coffee" },
   ],
 

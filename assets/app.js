@@ -467,8 +467,32 @@ function paintStaticCopy() {
   }
   nameEl.textContent = BRAND.name;
   $("#hero-kicker").textContent = BRAND.heroKicker;
-  $("#hero-title").innerHTML =
-    `<span class="thin">Shop</span> ${escapeHtml(BRAND.name)}`;
+  // Hero headline. When BRAND.heroMark is set the brand name is rendered as
+  // the wordmark image instead of type; the text stays in the alt so the H1
+  // still reads "Shop Hellbent" to search engines and screen readers.
+  $("#hero-lead").className = "thin";
+  $("#hero-lead").textContent = "Shop";
+  const mark = $("#hero-mark");
+  if (BRAND.heroMark) {
+    mark.src = BRAND.heroMark;
+    mark.alt = BRAND.name;
+    mark.hidden = false;
+  } else {
+    mark.remove();
+    $("#hero-lead").insertAdjacentText("afterend", ` ${BRAND.name}`);
+  }
+
+  // Header badge — an optional claim the brand wants beside the nav.
+  const badge = $("#brand-badge");
+  if (badge && BRAND.headerBadge?.label) {
+    const { icon, label } = BRAND.headerBadge;
+    badge.innerHTML = icon
+      ? `<img class="masthead__badge-icon" src="${icon}" alt=""><span>${escapeHtml(label)}</span>`
+      : `<span>${escapeHtml(label)}</span>`;
+    badge.hidden = false;
+  } else if (badge) {
+    badge.remove();
+  }
   $("#hero-tagline").textContent = BRAND.tagline;
   $("#handoff").textContent = BRAND.sellerNote;
   $("#footer-legal").textContent =
