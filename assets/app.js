@@ -280,8 +280,7 @@ function renderGrid() {
     if (p.inStock) {
       btn.addEventListener("click", () => {
         addToCart(p);
-        btn.textContent = "Added";
-        setTimeout(() => { btn.textContent = "Add"; }, 1100);
+        openDrawer();
       });
     }
     card.querySelector(".card__foot").appendChild(btn);
@@ -477,13 +476,40 @@ function paintStaticCopy() {
     `Must be 21 or older to purchase. Valid ID required at delivery.`;
   $("#footer-year").textContent = new Date().getFullYear();
 
-  const back = $("#back-link");
-  back.href = BRAND.backToSiteUrl;
-  back.textContent = BRAND.backToSiteLabel;
+  // The logo is the thread back to the brand's own site. Because that isn't
+  // where a logo normally goes, it carries an explicit label for screen readers.
+  const home = $("#brand-home");
+  home.href = BRAND.backToSiteUrl;
+  home.setAttribute("aria-label", `${BRAND.name} \u2014 ${BRAND.backToSiteLabel}`);
 
   const logo = $("#brand-logo");
   if (BRAND.logo) { logo.src = BRAND.logo; logo.alt = BRAND.name; }
   else logo.remove();
+
+  renderNav();
+}
+
+// Header nav, driven entirely by BRAND.nav so onboarding a brand stays a
+// config edit. External links open in a new tab: a shopper mid-cart who taps
+// "Merch" should not lose the shop.
+function renderNav() {
+  const nav = $("#brand-nav");
+  if (!nav) return;
+  const links = BRAND.nav || [];
+  if (!links.length) { nav.remove(); return; }
+
+  nav.innerHTML = "";
+  for (const item of links) {
+    const a = document.createElement("a");
+    a.className = "masthead__link";
+    a.href = item.href;
+    a.textContent = item.label;
+    if (item.external) {
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+    }
+    nav.appendChild(a);
+  }
 }
 
 function showLoading() {
@@ -495,11 +521,13 @@ function showLoading() {
 function showFailure(err) {
   const grid = $("#grid");
   grid.className = "";
+  const phone = BRAND.supportPhone
+    ? ` or call <a href="tel:${BRAND.supportPhone.replace(/[^\d+]/g, "")}">${BRAND.supportPhone}</a>`
+    : "";
   grid.innerHTML = `<div class="state">
-    <h2 class="state__title">The beer list didn't load</h2>
+    <h2 class="state__title">The catalog didn't load</h2>
     <p>Something went wrong reaching our catalog. Refresh the page to try again.</p>
-    <p>Still stuck? Email <a href="mailto:${BRAND.supportEmail}">${BRAND.supportEmail}</a>
-       or call <a href="tel:${BRAND.supportPhone.replace(/[^\d+]/g, "")}">${BRAND.supportPhone}</a>.</p>
+    <p>Still stuck? Email <a href="mailto:${BRAND.supportEmail}">${BRAND.supportEmail}</a>${phone}.</p>
   </div>`;
   console.error("[catalog]", err);
 }

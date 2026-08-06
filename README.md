@@ -95,3 +95,11 @@ backported to `Rincon_brewery` so the two stay in sync:
 6. Blank `supportPhone` falls back to the support email in error text
 7. `descriptionHtml` split into a lead paragraph (`.card__note`) and a spec
    line (`.card__spec`) built from the description's `<li>` items
+8. Add to cart opens the cart drawer
+9. `BRAND.nav` — config-driven header nav; external links open in a new tab
+10. The logo links to `backToSiteUrl` instead of `/`, with an explicit
+    aria-label since that isn't where a logo normally goes
+11. Removed the mobile rule that collapsed `.masthead__link` into a round ↗
+    icon — fine for one back-link, but it hid three named nav labels
+12. Failure state no longer says "beer list" and no longer renders an empty
+    `tel:` link when `supportPhone` is blank

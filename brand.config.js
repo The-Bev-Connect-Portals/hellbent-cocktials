@@ -44,8 +44,19 @@ export const BRAND = {
   // ── Copy ──────────────────────────────────────────────────
   tagline: "Ready-to-drink cocktails with a wicked twist, shipped to your door.",
   heroKicker: "Cocktails \u00b7 Evil Spirits",
+
+  // The logo links here — on our domain it's the only thread back to the brand.
   backToSiteUrl: "https://www.hellbentcocktails.com",
   backToSiteLabel: "Back to Main Site",
+
+  // Header nav, mirroring hellbentcocktails.com. "Pick Your Poison" is their
+  // cocktails page; here it IS the shop, so it points at the grid. Merch and
+  // About Us have no portal equivalent and link out to their site.
+  nav: [
+    { label: "Pick Your Poison", href: "#grid" },
+    { label: "Merch",    href: "https://www.hellbentcocktails.com/merch/",    external: true },
+    { label: "About Us", href: "https://www.hellbentcocktails.com/about-us/", external: true },
+  ],
 
   // Announcement bar. Display only — never the enforcement layer.
   // Real state list is attorney-pending. Do not name states here.

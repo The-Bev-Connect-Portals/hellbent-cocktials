@@ -72,11 +72,18 @@ a { color: inherit; }
   letter-spacing: 0.14em;
 }
 .masthead__spacer { flex: 1; }
+/* Nav mirrors Hellbent's own header: uppercase display type, wide tracking.
+   Wraps to a full-width second row below ~560px so the logo and cart button
+   keep their space on a phone. */
+.masthead__nav { display: flex; align-items: center; gap: 1.75rem; }
 .masthead__link {
-  font-size: 0.82rem; color: var(--muted);
-  text-decoration: none; font-weight: 500;
+  font-family: var(--font-display);
+  font-size: 0.82rem; color: var(--text);
+  text-decoration: none; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  white-space: nowrap;
 }
-.masthead__link:hover { color: var(--text); }
+.masthead__link:hover { color: var(--accent); }
 
 .cart-btn {
   position: relative;
@@ -358,6 +365,27 @@ a { color: inherit; }
 .footer__legal { max-width: 46ch; line-height: 1.55; }
 
 /* ── Responsive ───────────────────────────────────────────── */
+@media (max-width: 560px) {
+  .masthead__inner { flex-wrap: wrap; gap: 0.6rem 0.75rem; }
+  .masthead__logo img { height: 40px; }
+  /* Nav takes the full second row and scrolls sideways if it ever outgrows it. */
+  .masthead__nav {
+    order: 3; flex-basis: 100%;
+    gap: 1.25rem;
+    overflow-x: auto; scrollbar-width: none;
+    padding-bottom: 0.15rem;
+    border-top: 1px solid var(--line);
+    padding-top: 0.6rem;
+  }
+  .masthead__nav::-webkit-scrollbar { display: none; }
+  /* Text is small here; pad the hit area out to a thumb-sized target. */
+  .masthead__link {
+    font-size: 0.76rem;
+    display: inline-flex; align-items: center;
+    min-height: 40px;
+  }
+}
+
 @media (max-width: 960px) {
   .grid { grid-template-columns: repeat(2, 1fr); }
   .shell { grid-template-columns: 1fr; gap: 1.25rem; }
@@ -395,22 +423,9 @@ a { color: inherit; }
   }
   .masthead__logo { min-width: 0; }
   .masthead__logo img { height: 44px; max-width: 116px; object-fit: contain; }
-  .masthead__link {
-    display: inline-grid;
-    place-items: center;
-    width: 44px;
-    height: 44px;
-    flex: 0 0 44px;
-    overflow: hidden;
-    font-size: 0;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-  }
-  .masthead__link::before {
-    content: "↗";
-    font-size: 1.05rem;
-    line-height: 1;
-  }
+  /* The Rincon build collapsed its single "Back to Main Site" link into a round
+     ↗ icon here. With three named nav links that hides the labels entirely, so
+     the icon treatment is gone — the 560px rule above wraps the nav instead. */
   .cart-btn {
     min-height: 44px;
     flex-shrink: 0;
