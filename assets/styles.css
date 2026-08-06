@@ -72,7 +72,14 @@ a { color: inherit; }
   letter-spacing: 0.14em;
 }
 .masthead__spacer { flex: 1; }
-#hero-mark { display: block; height: 0.92em; width: auto; margin-top: 0.1em; }
+/* Hero wordmark sits inline beside "Shop". Cap height, not em box: the
+   logotype's glyphs fill its frame edge to edge, so matching it to the full em
+   would render it noticeably heavier than the type next to it. */
+#hero-mark {
+  display: inline-block; vertical-align: baseline;
+  height: 0.74em; width: auto;
+  margin-left: 0.18em;
+}
 /* Nav mirrors Hellbent's own header: uppercase display type, wide tracking.
    Wraps to a full-width second row below ~560px so the logo and cart button
    keep their space on a phone. */
@@ -138,6 +145,8 @@ a { color: inherit; }
   font-weight: 800; line-height: 0.98;
   letter-spacing: -0.005em;
   margin: 0; text-transform: uppercase;
+  display: flex; align-items: baseline; flex-wrap: wrap;
+  gap: 0 0.1em;
 }
 .hero__title .thin { font-weight: 300; }
 .hero__tagline {

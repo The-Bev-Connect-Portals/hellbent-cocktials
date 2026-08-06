@@ -13,9 +13,9 @@ export const BRAND = {
   logo: "/assets/logo.png",
 
   // Hero wordmark. Replaces the word "Hellbent" in the H1 with the logo image.
-  // Currently reusing assets/logo.png — swap if their team sends a wordmark cut
-  // without the "Cocktails & Evil Spirits" lockup, which reads better inline.
-  heroMark: "/assets/logo.png",
+  // Their team's bare logotype cut — white on transparent, no tagline lockup,
+  // so it sits inline with "Shop" at matching optical weight.
+  heroMark: "/assets/wordmark.png",
 
   // Optional claim shown beside the nav. `icon` is their artwork; until it
   // arrives this renders as a text badge rather than a stand-in glyph.
