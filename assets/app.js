@@ -533,7 +533,14 @@ function showFailure(err) {
 }
 
 async function init() {
-  paintStaticCopy();
+  // Painting the chrome must never take the catalog down with it. A stale
+  // cached app.js against newer HTML threw here once and blanked the whole
+  // page; a shop that renders without its header still sells.
+  try {
+    paintStaticCopy();
+  } catch (err) {
+    console.error("[chrome] header/footer failed to paint", err);
+  }
   renderCartButton();
   renderCart();
 
