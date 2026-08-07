@@ -75,10 +75,14 @@ a { color: inherit; }
 /* Hero wordmark sits inline beside "Shop". Cap height, not em box: the
    logotype's glyphs fill its frame edge to edge, so matching it to the full em
    would render it noticeably heavier than the type next to it. */
+/* SHOP's cap height measures 0.819em in Oswald 800. The wordmark is set to
+   0.95em so HELLBENT reads clearly taller than SHOP, per their team. Its ink
+   fills the file edge to edge, so height here is true ink height. */
 #hero-mark {
   display: inline-block; vertical-align: baseline;
-  height: 0.74em; width: auto;
-  margin-left: 0.18em;
+  height: 0.95em; width: auto;
+  margin-left: 0.16em;
+  position: relative; top: 0.012em;   /* optical baseline seat */
 }
 /* Nav mirrors Hellbent's own header: uppercase display type, wide tracking.
    Wraps to a full-width second row below ~560px so the logo and cart button
@@ -213,7 +217,9 @@ a { color: inherit; }
 .card--out { opacity: 0.55; }
 
 .card__media {
-  aspect-ratio: 1 / 1;
+  /* Matches the composite's 1.65 ratio. A square frame letterboxed a landscape
+     product shot, which is why it looked small. */
+  aspect-ratio: 5 / 3;
   background: var(--surface-alt);
   position: relative; overflow: hidden;
 }
@@ -223,7 +229,7 @@ a { color: inherit; }
      crop the box or can at the edges. Padding is trimmed in the source files
      instead, which is what actually makes them read larger. */
   object-fit: contain;
-  padding: 4%;
+  padding: 1.5%;
   transition: transform 0.4s ease;
 }
 .card__media { background: var(--surface); }
@@ -504,7 +510,7 @@ a { color: inherit; }
     border-radius: 10px;
   }
   .card:hover { transform: none; }
-  .card__media { aspect-ratio: auto; min-height: 100%; }
+  .card__media { aspect-ratio: 5 / 3; min-height: 0; }
   .card:hover .card__media img { transform: none; }
   .card__flag { top: 0.55rem; left: 0.55rem; }
   .card__body { min-width: 0; padding: 0.9rem; gap: 0.4rem; }
