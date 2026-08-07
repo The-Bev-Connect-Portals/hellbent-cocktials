@@ -17,9 +17,12 @@ export const BRAND = {
   // so it sits inline with "Shop" at matching optical weight.
   heroMark: "/assets/wordmark.png",
 
-  // Optional claim shown beside the nav. `icon` is their artwork; until it
-  // arrives this renders as a text badge rather than a stand-in glyph.
-  headerBadge: { label: "Two Cocktails per Can", icon: null },
+  // Product claim badge in the hero. Their supplied artwork, used as-is —
+  // it's designed black-on-white and reads as a printed stamp on the dark page.
+  heroBadge: {
+    image: "/assets/two-cocktails-badge.png",
+    label: "Two cocktails per can",
+  },
   logoIncludesName: true,          // wordmark already reads "HELLBENT"
   favicon: "/assets/favicon.png",
 

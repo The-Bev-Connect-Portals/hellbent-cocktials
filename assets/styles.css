@@ -88,21 +88,6 @@ a { color: inherit; }
    Wraps to a full-width second row below ~560px so the logo and cart button
    keep their space on a phone. */
 .masthead__nav { display: flex; align-items: center; gap: 1.75rem; }
-/* Product claim badge. Reads as a badge, not another nav item — once their
-   icon lands it sits to the left of the label inside the same pill. */
-.masthead__badge {
-  display: inline-flex; align-items: center; gap: 0.4rem;
-  border: 1px solid var(--accent);
-  color: var(--accent);
-  border-radius: 999px;
-  padding: 0.3rem 0.7rem;
-  font-family: var(--font-display);
-  font-size: 0.7rem; font-weight: 600;
-  text-transform: uppercase; letter-spacing: 0.09em;
-  white-space: nowrap;
-  margin-right: 1.5rem;
-}
-.masthead__badge-icon { width: 16px; height: 16px; display: block; }
 .masthead__link {
   font-family: var(--font-display);
   font-size: 0.82rem; color: var(--text);
@@ -137,6 +122,15 @@ a { color: inherit; }
   padding: clamp(2.75rem, 7vw, 4.25rem) 1.25rem clamp(1.75rem, 3.5vw, 2.5rem);
   border-bottom: 1px solid var(--line);
   margin-bottom: clamp(1.5rem, 3vw, 2.25rem);
+  display: flex; align-items: center; gap: clamp(1.5rem, 5vw, 4rem);
+}
+.hero__copy { flex: 1 1 auto; min-width: 0; }
+/* Claim badge filling the hero's open right side. Capped so it reads as a
+   stamp beside the headline rather than competing with it. */
+.hero__badge {
+  flex: 0 0 auto;
+  width: clamp(150px, 20vw, 260px);
+  height: auto; display: block;
 }
 .hero__kicker {
   font-size: 0.68rem; letter-spacing: 0.24em;
@@ -405,7 +399,6 @@ a { color: inherit; }
   .masthead__inner { flex-wrap: wrap; gap: 0.6rem 0.75rem; }
   .masthead__logo img { height: 40px; }
   /* Nav takes the full second row and scrolls sideways if it ever outgrows it. */
-  .masthead__badge { order: 2; margin-right: 0; font-size: 0.62rem; }
   .masthead__nav {
     order: 3; flex-basis: 100%;
     gap: 1.25rem;
@@ -479,6 +472,8 @@ a { color: inherit; }
     line-height: 1.55;
     margin-bottom: 0.65rem;
   }
+  .hero { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
+  .hero__badge { width: min(200px, 55%); }
   .hero__title {
     font-size: clamp(2rem, 12vw, 3.25rem);
     line-height: 0.95;

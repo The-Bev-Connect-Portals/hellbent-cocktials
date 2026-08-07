@@ -482,13 +482,12 @@ function paintStaticCopy() {
     $("#hero-lead").insertAdjacentText("afterend", ` ${BRAND.name}`);
   }
 
-  // Header badge — an optional claim the brand wants beside the nav.
-  const badge = $("#brand-badge");
-  if (badge && BRAND.headerBadge?.label) {
-    const { icon, label } = BRAND.headerBadge;
-    badge.innerHTML = icon
-      ? `<img class="masthead__badge-icon" src="${icon}" alt=""><span>${escapeHtml(label)}</span>`
-      : `<span>${escapeHtml(label)}</span>`;
+  // Product claim badge, sitting in the hero's open right side. It's the
+  // brand's own artwork, so it ships as an image with the claim in the alt.
+  const badge = $("#hero-badge");
+  if (badge && BRAND.heroBadge?.image) {
+    badge.src = BRAND.heroBadge.image;
+    badge.alt = BRAND.heroBadge.label || "";
     badge.hidden = false;
   } else if (badge) {
     badge.remove();
