@@ -129,7 +129,7 @@ a { color: inherit; }
    stamp beside the headline rather than competing with it. */
 .hero__badge {
   flex: 0 0 auto;
-  width: clamp(150px, 20vw, 260px);
+  width: clamp(112px, 13vw, 168px);
   height: auto; display: block;
 }
 .hero__kicker {
@@ -211,9 +211,9 @@ a { color: inherit; }
 .card--out { opacity: 0.55; }
 
 .card__media {
-  /* Matches the composite's 1.65 ratio. A square frame letterboxed a landscape
-     product shot, which is why it looked small. */
-  aspect-ratio: 5 / 3;
+  /* Exactly matches the composite ratio (2228x1700). Any mismatch here
+     letterboxes and shrinks the product. */
+  aspect-ratio: 2228 / 1700;
   background: var(--surface-alt);
   position: relative; overflow: hidden;
 }
@@ -223,7 +223,7 @@ a { color: inherit; }
      crop the box or can at the edges. Padding is trimmed in the source files
      instead, which is what actually makes them read larger. */
   object-fit: contain;
-  padding: 1.5%;
+  padding: 0;
   transition: transform 0.4s ease;
 }
 .card__media { background: var(--surface); }
@@ -473,7 +473,7 @@ a { color: inherit; }
     margin-bottom: 0.65rem;
   }
   .hero { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
-  .hero__badge { width: min(200px, 55%); }
+  .hero__badge { width: min(132px, 40%); }
   .hero__title {
     font-size: clamp(2rem, 12vw, 3.25rem);
     line-height: 0.95;
@@ -505,7 +505,7 @@ a { color: inherit; }
     border-radius: 10px;
   }
   .card:hover { transform: none; }
-  .card__media { aspect-ratio: 5 / 3; min-height: 0; }
+  .card__media { aspect-ratio: 2228 / 1700; min-height: 0; }
   .card:hover .card__media img { transform: none; }
   .card__flag { top: 0.55rem; left: 0.55rem; }
   .card__body { min-width: 0; padding: 0.9rem; gap: 0.4rem; }
