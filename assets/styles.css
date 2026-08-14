@@ -223,7 +223,9 @@ a { color: inherit; }
      crop the box or can at the edges. Padding is trimmed in the source files
      instead, which is what actually makes them read larger. */
   object-fit: contain;
-  padding: 0;
+  /* Breathing room between the product and the card edges. The frame ratio
+     matches the image exactly, so this insets evenly on all four sides. */
+  padding: 5%;
   transition: transform 0.4s ease;
 }
 .card__media { background: var(--surface); }
