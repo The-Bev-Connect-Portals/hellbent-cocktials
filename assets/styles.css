@@ -51,6 +51,20 @@ a { color: inherit; }
   padding: 0.6rem 1rem;
 }
 
+/* Pre-sale flag, ahead of the shipping line in the same bar. Boxed so it
+   reads as a status stamp rather than as more sentence. */
+.announce__flag {
+  display: inline-block;
+  margin-right: 0.6rem;
+  padding: 0.12rem 0.5rem;
+  border-radius: 3px;
+  background: var(--accent-text);
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+}
+
 /* ── Header ───────────────────────────────────────────────── */
 .masthead {
   position: sticky; top: 0; z-index: 40;
@@ -151,6 +165,62 @@ a { color: inherit; }
   color: var(--muted);
   font-size: clamp(0.95rem, 2.2vw, 1.15rem);
   margin: 1.1rem 0 0; max-width: 32ch;
+}
+
+/* ── Notice strip ─────────────────────────────────────────── */
+/* Pre-sale, minimum order, launch promo. Sits between the hero and the
+   grid so it's read before anything is added to a cart. */
+.notices {
+  max-width: 1240px;
+  margin: 0 auto 1.75rem;
+  padding: 0 1.25rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 0.85rem;
+}
+.notices[hidden] { display: none; }
+
+.notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  padding: 0.95rem 1.1rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+/* The minimum is the one that changes what a shopper has to do, so it
+   carries the accent edge. The others are informational. */
+.notice--lead {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+}
+
+/* Wider than tall — the minimum mark is a 60x40 viewBox. Height is what's
+   fixed; width follows so the drawn marks aren't letterboxed. */
+.notice__icon {
+  flex-shrink: 0;
+  width: 46px; height: 40px;
+  color: var(--accent);
+}
+.notice__icon svg { width: 100%; height: 100%; display: block; }
+.notice--lead .notice__icon { color: var(--accent); }
+
+.notice__body { min-width: 0; }
+.notice__heading {
+  margin: 0 0 0.2rem;
+  font-family: var(--font-display);
+  font-size: 0.86rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.notice__line {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--muted);
 }
 
 /* ── Layout ───────────────────────────────────────────────── */
@@ -372,13 +442,46 @@ a { color: inherit; }
   transition: filter 0.14s;
 }
 .checkout-btn:hover:not(:disabled) { filter: brightness(1.1); }
+/* Busy (preparing the Shopify cart) — a wait cursor is right here. */
 .checkout-btn:disabled { opacity: 0.6; cursor: wait; }
+/* Blocked by the minimum — a different thing entirely. Reads as unavailable
+   rather than loading, and matches how a sold-out Add button looks. */
+.checkout-btn[data-blocked="true"] {
+  background: var(--surface-alt);
+  color: var(--muted);
+  opacity: 1;
+  cursor: not-allowed;
+}
 
 /* Seller-of-record disclosure. Legally load-bearing — never hide. */
 .handoff {
   margin: 0.85rem 0 0; font-size: 0.74rem; line-height: 1.45;
   color: var(--muted); text-align: center;
 }
+
+/* Pre-sale disclosure in the cart. A shopper about to pay needs to know
+   the box isn't shipping today — the announcement bar is too easy to miss. */
+.drawer__presale {
+  margin: 0 0 0.9rem;
+  font-size: 0.74rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+.drawer__presale[hidden] { display: none; }
+
+/* Minimum-order gate. Sits directly above the button it disables so the
+   reason and the blocked control are read together. */
+.drawer__min {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  padding: 0.65rem 0.8rem;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+.drawer__min[hidden] { display: none; }
 
 .drawer__error {
   background: color-mix(in srgb, var(--accent) 14%, transparent);
@@ -395,6 +498,134 @@ a { color: inherit; }
 }
 .footer__inner { max-width: 1240px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 1rem 2rem; align-items: baseline; }
 .footer__legal { max-width: 46ch; line-height: 1.55; }
+
+/* ── Help widget ──────────────────────────────────────────── */
+/* Stacking: masthead 40 · help 45/46 · scrim 50 · drawer 51. The cart
+   drawer deliberately covers the help widget, and openDrawer() also sets
+   body[data-drawer="open"] to take the button out of the tab order. */
+.help-fab {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 45;
+  width: 52px; height: 52px;
+  border: 0; border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-text);
+  font-family: var(--font-display);
+  font-size: 1.5rem; font-weight: 700; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+  transition: filter 0.14s, transform 0.14s;
+}
+.help-fab:hover { filter: brightness(1.1); transform: translateY(-2px); }
+
+body[data-drawer="open"] .help-fab,
+body[data-drawer="open"] .help-panel { display: none; }
+
+.help-panel {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 5.25rem;
+  z-index: 46;
+  width: min(360px, calc(100vw - 2.5rem));
+  max-height: min(560px, calc(100vh - 8rem));
+  overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 1.15rem;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55);
+  opacity: 0; transform: translateY(8px);
+  pointer-events: none;
+  transition: opacity 0.16s, transform 0.16s;
+}
+.help-panel[data-open="true"] {
+  opacity: 1; transform: translateY(0); pointer-events: auto;
+}
+
+.help-panel__head {
+  display: flex; align-items: flex-start; gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+.help-panel__title {
+  flex: 1; margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.05rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.05em;
+}
+.help-panel__close {
+  background: none; border: 0; color: var(--muted);
+  font-size: 1.5rem; line-height: 1;
+  width: 32px; height: 32px; border-radius: 6px;
+  flex-shrink: 0;
+}
+.help-panel__close:hover { color: var(--text); background: var(--surface-alt); }
+
+.help-panel__line {
+  margin: 0 0 0.95rem;
+  font-size: 0.8rem; line-height: 1.5; color: var(--muted);
+}
+
+/* Honeypot. Hidden from people, still reachable by the bots that fill
+   every field they find — which is the whole point. */
+.help-form__pot { position: absolute; left: -9999px; }
+
+.help-form__label {
+  display: block;
+  font-size: 0.72rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  margin-bottom: 0.3rem;
+}
+.help-form__label span { font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--muted); }
+
+.help-form__input {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  padding: 0.55rem 0.65rem;
+  margin-bottom: 0.8rem;
+}
+.help-form__input:focus-visible { border-color: var(--accent); }
+.help-form__textarea { resize: vertical; min-height: 84px; }
+
+.help-form__status {
+  border-radius: 8px; padding: 0.65rem 0.8rem;
+  font-size: 0.78rem; line-height: 1.45;
+  margin-bottom: 0.75rem;
+}
+.help-form__status[hidden] { display: none; }
+.help-form__status--ok {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border: 1px solid var(--accent);
+}
+.help-form__status--bad {
+  background: color-mix(in srgb, var(--gold) 18%, transparent);
+  border: 1px solid var(--gold);
+}
+.help-form__status a { color: var(--accent); }
+
+.help-form__submit {
+  width: 100%;
+  background: var(--accent); color: var(--accent-text);
+  border: 0; border-radius: 999px;
+  padding: 0.75rem;
+  font-size: 0.88rem; font-weight: 700;
+  transition: filter 0.14s;
+}
+.help-form__submit:hover:not(:disabled) { filter: brightness(1.1); }
+.help-form__submit:disabled { opacity: 0.6; cursor: wait; }
+
+/* Standalone pages (thanks.html) borrow the shell without a sidebar. */
+.shell--solo {
+  max-width: 1240px; margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+  display: block;
+}
 
 /* ── Responsive ───────────────────────────────────────────── */
 @media (max-width: 560px) {
@@ -542,6 +773,26 @@ a { color: inherit; }
   .stepper button { width: 2rem; height: 2rem; }
   .line__remove { min-height: 44px; }
   .checkout-btn { min-height: 48px; }
+
+  .notices {
+    padding: 0 1rem;
+    margin-bottom: 1.25rem;
+    gap: 0.6rem;
+    grid-template-columns: 1fr;
+  }
+  .notice { padding: 0.8rem 0.9rem; gap: 0.7rem; }
+  .notice__icon { width: 40px; height: 34px; }
+
+  .help-fab {
+    right: 1rem;
+    bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+  .help-panel {
+    right: 1rem; left: 1rem;
+    width: auto;
+    bottom: calc(4.75rem + env(safe-area-inset-bottom));
+    max-height: calc(100vh - 7.5rem);
+  }
 
   .footer { padding: 2rem 1rem max(2rem, env(safe-area-inset-bottom)); }
   .footer__inner { display: grid; gap: 0.75rem; }
