@@ -69,6 +69,65 @@ Pulled from `hellbentcocktails.com/wp-content/themes/hellbent/style.css`:
   license, so Oswald and Barlow stand in. Swap in the real files if they sign
   and supply them.
 
+## Pre-sale, minimum order, promo
+
+All three are config blocks in `brand.config.js` and all three switch off by
+flipping one `active` flag — no markup changes.
+
+| Block | Turns off when | What disappears |
+|---|---|---|
+| `presale` | Stock ships | Announcement-bar flag, notice card, cart drawer note |
+| `minOrder` | Minimum is dropped | Notice card, cart gate, checkout block |
+| `promo` | 250th order is in | "First 250 orders" notice card |
+
+`presale.window` is empty. "Shipping soon" is vague enough to be safe but
+weak enough to generate support email — put a real window in
+(`"Ships the week of Oct 6"`) as soon as one is confirmed and it renders
+everywhere the pre-sale copy appears.
+
+The comic book is copy only. Nothing is added to the cart, no `$0` SKU is
+created, and nothing reaches a Bev Connect pick list — comics are fulfilled
+separately after the fact and the flag is switched off by hand at 250.
+
+### The minimum is NOT enforced by this repo
+
+`minOrder` sets expectations and disables this site's own checkout button.
+That is all it can do. The cart is `localStorage` and the Shopify
+`checkoutUrl` is a plain shareable link, so anything decided in the browser
+can be walked around.
+
+Enforcement is the **Yuko** validation function on
+`bro-basket.myshopify.com`, which runs server-side via Shopify Functions and
+cannot be bypassed — including by Shop Pay and the other express buttons.
+Two things must be true of that rule:
+
+1. **Scope it to Hellbent products only** — the `portal:hellbent` collection.
+   `bro-basket.myshopify.com` is one store also serving BroBasket and Go-To
+   Gifting. An unscoped rule puts a 2-item minimum on every gift basket
+   order on the account.
+2. **Match `minOrder.scope`.** `"cart"` here means Yuko scope *Cart*,
+   minimum 2 total items. `"line"` means scope *Product/Variant*, minimum 2
+   of each. If the two disagree the site promises one rule and checkout
+   blocks on another.
+
+Neither can be verified from this repo. Place a test order after configuring
+Yuko and confirm a 1-item cart is actually rejected at Shopify's checkout,
+not just here.
+
+## Help widget
+
+Floating `?`, bottom right → panel → **Netlify Forms**. No backend, no
+third-party script, no cookies. `thanks.html` is the no-JS fallback; with JS
+the panel posts over `fetch` and shows success inline.
+
+**The form markup must stay in `index.html`.** Netlify registers forms by
+parsing deployed HTML at build time. A form injected by `app.js` is never
+registered and every submission 404s.
+
+⚠ **Submissions go nowhere until a notification is configured.** They collect
+in Netlify → Site configuration → Forms → *Form notifications*. Set the
+reply-to address there. Same trap that is still open on `the_Rock_Slo`.
+
 ## Open items
 
 - **Prices** — $19.95 across the board is a placeholder, now live in Shopify. Their own site shows

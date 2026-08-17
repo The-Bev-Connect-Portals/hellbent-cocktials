@@ -181,6 +181,45 @@ function setQty(variantId, qty) {
 const cartCount = () => cart.reduce((n, l) => n + l.qty, 0);
 const cartTotal = () => cart.reduce((n, l) => n + Number(l.price) * l.qty, 0);
 
+/* ── Minimum order quantity ──────────────────────────────────
+   This is expectation-setting, not enforcement. The cart lives in
+   localStorage and the Shopify checkout URL is a plain link, so anything
+   decided here can be walked around. The binding rule is the Yuko
+   validation function on the store, which runs server-side at checkout
+   and cannot be bypassed — including by Shop Pay and the other express
+   buttons. Keep BRAND.minOrder.scope in step with how Yuko is configured
+   or the site will promise one rule and checkout will enforce another.
+   ──────────────────────────────────────────────────────────── */
+
+const MIN = BRAND.minOrder || {};
+const MIN_QTY = Number(MIN.qty) || 0;
+const MIN_ON = MIN.active === true && MIN_QTY > 1;
+
+const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
+
+// Returns a shopper-facing string when the cart is below the minimum,
+// or null when it's fine. Null is the signal that checkout may proceed.
+function minOrderIssue() {
+  if (!MIN_ON || !cart.length) return null;
+
+  if (MIN.scope === "line") {
+    const under = cart.filter((l) => l.qty < MIN_QTY);
+    if (!under.length) return null;
+    if (under.length === 1) {
+      const l = under[0];
+      return `Minimum ${MIN_QTY} of each item. Add ` +
+             `${plural(MIN_QTY - l.qty, "more")} of ${shortTitle(l.title)}.`;
+    }
+    return `Minimum ${MIN_QTY} of each item. ` +
+           `${under.length} items in your cart are below that.`;
+  }
+
+  const short = MIN_QTY - cartCount();
+  if (short <= 0) return null;
+  return `Minimum order is ${plural(MIN_QTY, "item")}. ` +
+         `Add ${plural(short, "more item")} to check out.`;
+}
+
 const money = (amount, currency = "USD") =>
   new Intl.NumberFormat("en-US", { style: "currency", currency }).format(Number(amount));
 
@@ -239,7 +278,7 @@ function renderGrid() {
     grid.className = "";
     grid.innerHTML = `<div class="state">
       <h2 class="state__title">Nothing here yet</h2>
-      <p>No beer matches that filter right now. Try another style.</p>
+      <p>No cocktails match that filter right now. Try another style.</p>
     </div>`;
     return;
   }
@@ -288,7 +327,7 @@ function renderGrid() {
   }
 }
 
-// Products are named "Rincon Brewery - Beached Hazy IPA"; the brand
+// Products are named "Hellbent - Spicy Rita"; the brand
 // prefix is redundant on the brand's own storefront.
 function shortTitle(title) {
   for (const prefix of [`${BRAND.name} - `, `${BRAND.name} `]) {
@@ -315,7 +354,7 @@ function renderCart() {
   if (!cart.length) {
     body.innerHTML = `<div class="drawer__empty">
       <p>Your cart is empty.</p>
-      <p style="font-size:0.8rem">Pick something cold and it'll show up here.</p>
+      <p style="font-size:0.8rem">Pick your poison and it'll show up here.</p>
     </div>`;
     foot.hidden = true;
     return;
@@ -354,6 +393,44 @@ function renderCart() {
   }
 
   $("#cart-total").textContent = money(cartTotal(), cart[0].currency);
+  renderCartGate();
+}
+
+// Pre-sale disclosure and the minimum-order gate, both painted from config.
+// The gate disables our own checkout button and says why; Yuko is what
+// actually stops a short order at Shopify's checkout.
+function renderCartGate() {
+  const presaleEl = $("#drawer-presale");
+  const P = BRAND.presale || {};
+  if (presaleEl) {
+    if (P.active && P.note) {
+      presaleEl.textContent = P.window ? `${P.note} ${P.window}.` : P.note;
+      presaleEl.hidden = false;
+    } else {
+      presaleEl.hidden = true;
+    }
+  }
+
+  const box = $("#drawer-min");
+  const btn = $("#checkout");
+  if (!box || !btn) return;
+
+  const issue = minOrderIssue();
+  if (issue) {
+    box.textContent = issue;
+    box.hidden = false;
+    btn.disabled = true;
+    btn.dataset.blocked = "true";
+    btn.setAttribute("aria-describedby", "drawer-min");
+  } else {
+    box.hidden = true;
+    box.textContent = "";
+    // Never re-enable mid-checkout — checkout() owns the button while it's
+    // preparing the Shopify cart and sets its own label.
+    if (btn.textContent === "Checkout") btn.disabled = false;
+    delete btn.dataset.blocked;
+    btn.removeAttribute("aria-describedby");
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -363,6 +440,13 @@ function renderCart() {
 let lastFocus = null;
 
 function openDrawer() {
+  // The cart drawer and the help FAB both live bottom-right. The drawer
+  // wins: close the panel and pull the button out of the way rather than
+  // letting a "?" float over the checkout button.
+  const panel = $("#help-panel");
+  if (panel?.dataset.open === "true") closeHelp();
+  document.body.dataset.drawer = "open";
+
   lastFocus = document.activeElement;
   $("#drawer").dataset.open = "true";
   $("#scrim").dataset.open = "true";
@@ -373,6 +457,7 @@ function openDrawer() {
 }
 
 function closeDrawer() {
+  document.body.dataset.drawer = "closed";
   $("#drawer").dataset.open = "false";
   $("#scrim").dataset.open = "false";
   $("#drawer").setAttribute("aria-hidden", "true");
@@ -417,6 +502,16 @@ async function checkout() {
   const errBox = $("#drawer-error");
   errBox.hidden = true;
 
+  // Second gate. The button is already disabled below the minimum; this
+  // catches the case where something re-enabled it. Cheaper to stop here
+  // than to send the shopper to a checkout Yuko will reject.
+  const issue = minOrderIssue();
+  if (issue) {
+    errBox.textContent = issue;
+    errBox.hidden = false;
+    return;
+  }
+
   // Demo mode has no Shopify cart behind it. Say so rather than throwing a
   // stack trace or spinning forever.
   if (DEMO) {
@@ -456,11 +551,209 @@ async function checkout() {
 }
 
 /* ═══════════════════════════════════════════════════════════
+   Help widget
+
+   Floating "?" → panel → Netlify Forms. No backend, no third-party
+   script, no cookies. The form markup lives in index.html because
+   Netlify registers forms by parsing deployed HTML; a JS-injected form
+   is never registered and every submission 404s.
+
+   Submissions land in Netlify → Site configuration → Forms. THEY GO
+   NOWHERE ELSE until a form notification is configured there. That step
+   is in the Netlify UI, not in this repo.
+   ═══════════════════════════════════════════════════════════ */
+
+let helpLastFocus = null;
+
+function openHelp() {
+  helpLastFocus = document.activeElement;
+  $("#help-panel").dataset.open = "true";
+  $("#help-panel").setAttribute("aria-hidden", "false");
+  $("#help-open").setAttribute("aria-expanded", "true");
+  $("#help-name").focus();
+  document.addEventListener("keydown", onHelpKey);
+}
+
+function closeHelp() {
+  $("#help-panel").dataset.open = "false";
+  $("#help-panel").setAttribute("aria-hidden", "true");
+  $("#help-open").setAttribute("aria-expanded", "false");
+  document.removeEventListener("keydown", onHelpKey);
+  helpLastFocus?.focus();
+}
+
+// Escape closes. Deliberately NOT focus-trapped: this is a popover, not a
+// modal — the page behind it stays usable, so trapping focus would be wrong.
+function onHelpKey(e) {
+  if (e.key === "Escape") closeHelp();
+}
+
+async function submitHelp(e) {
+  e.preventDefault();
+  const form = $("#help-form");
+  const status = $("#help-status");
+  const btn = $("#help-submit");
+
+  status.hidden = true;
+  status.className = "help-form__status";
+  btn.disabled = true;
+  btn.textContent = "Sending…";
+
+  try {
+    // Netlify expects a urlencoded POST to any path on the site, with the
+    // form's own name in `form-name`. Read that from the DOM rather than
+    // config so the two can never drift apart.
+    const data = new FormData(form);
+    data.set("form-name", form.getAttribute("name"));
+
+    const res = await fetch("/", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams(data).toString(),
+    });
+    if (!res.ok) throw new Error(`Netlify returned ${res.status}`);
+
+    form.reset();
+    status.textContent = BRAND.helpForm?.success ||
+      "Thanks — we've got it. We'll reply by email shortly.";
+    status.classList.add("help-form__status--ok");
+    status.hidden = false;
+    btn.disabled = false;
+    btn.textContent = "Send message";
+  } catch (err) {
+    // Never swallow it. A shopper who thinks they sent a message and didn't
+    // is worse off than one who's told to email instead.
+    status.innerHTML =
+      `That didn't send. Please email ` +
+      `<a href="mailto:${escapeAttr(BRAND.supportEmail)}">${escapeHtml(BRAND.supportEmail)}</a> ` +
+      `and we'll pick it up there.`;
+    status.classList.add("help-form__status--bad");
+    status.hidden = false;
+    btn.disabled = false;
+    btn.textContent = "Send message";
+    console.error("[help]", err);
+  }
+}
+
+function initHelp() {
+  const H = BRAND.helpForm || {};
+  const fab = $("#help-open");
+  const panel = $("#help-panel");
+  if (!fab || !panel) return;
+
+  if (!H.active) { fab.remove(); panel.remove(); return; }
+
+  $("#help-title").textContent = H.heading || "Need a hand?";
+  $("#help-line").textContent = H.line || "";
+
+  fab.addEventListener("click", () => {
+    panel.dataset.open === "true" ? closeHelp() : openHelp();
+  });
+  $("#help-close").addEventListener("click", closeHelp);
+  $("#help-form").addEventListener("submit", submitHelp);
+}
+
+/* ═══════════════════════════════════════════════════════════
    Init
    ═══════════════════════════════════════════════════════════ */
 
+/* ═══════════════════════════════════════════════════════════
+   Notice strip — pre-sale, minimum order, launch promo
+
+   Icons are inline SVG in the brand's own accent colors rather than
+   image files, so there's nothing to art-direct, nothing to load, and
+   they inherit the palette automatically. To swap in real artwork later,
+   add `icon: "/assets/whatever.png"` to the config block and it's used
+   instead of the drawn mark.
+   ═══════════════════════════════════════════════════════════ */
+
+const MARKS = {
+  // Two cans side by side with a "×2" — reads as the minimum at a glance.
+  min: `<svg viewBox="0 0 60 40" fill="none" aria-hidden="true">
+    <rect x="2" y="7" width="13" height="27" rx="3.2" stroke="currentColor" stroke-width="2.2"/>
+    <rect x="17" y="7" width="13" height="27" rx="3.2" stroke="currentColor" stroke-width="2.2"/>
+    <path d="M2 14h13M17 14h13" stroke="currentColor" stroke-width="2.2"/>
+    <text x="58" y="28" font-size="19" font-weight="700" fill="currentColor"
+          text-anchor="end" font-family="system-ui, sans-serif">&#215;2</text>
+  </svg>`,
+
+  // Comic panel with a burst — the giveaway.
+  promo: `<svg viewBox="0 0 40 40" fill="none" aria-hidden="true">
+    <rect x="4" y="6" width="26" height="28" rx="2.6" stroke="currentColor" stroke-width="2.2"/>
+    <path d="M9 12h9M9 17h9M9 22h6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+    <path d="M28.5 19.5l2.1 4.4 4.9.7-3.5 3.4.8 4.8-4.3-2.3-4.3 2.3.8-4.8-3.5-3.4 4.9-.7z"
+          stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>
+  </svg>`,
+
+  // Clock — pre-sale, shipping later.
+  presale: `<svg viewBox="0 0 40 40" fill="none" aria-hidden="true">
+    <circle cx="20" cy="20" r="15" stroke="currentColor" stroke-width="2.2"/>
+    <path d="M20 11v9.5l6 3.5" stroke="currentColor" stroke-width="2.2"
+          stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`,
+};
+
+function paintNotices() {
+  const strip = $("#notices");
+  if (!strip) return;
+
+  const P = BRAND.presale || {};
+  const M = BRAND.minOrder || {};
+  const R = BRAND.promo || {};
+
+  const items = [];
+
+  if (M.active && Number(M.qty) > 1) {
+    items.push({ key: "min", icon: M.icon, heading: M.heading, line: M.line, lead: true });
+  }
+  if (R.active) {
+    items.push({ key: "promo", icon: R.icon, heading: R.heading, line: R.line });
+  }
+  if (P.active) {
+    const heading = [P.label, P.line].filter(Boolean).join(" \u2014 ");
+    const line = P.window
+      ? `${P.note} ${P.window}.`
+      : P.note;
+    items.push({ key: "presale", icon: P.icon, heading, line });
+  }
+
+  if (!items.length) { strip.remove(); return; }
+
+  strip.hidden = false;
+  strip.innerHTML = "";
+
+  for (const n of items) {
+    const el = document.createElement("div");
+    el.className = "notice" + (n.lead ? " notice--lead" : "");
+    // Config-supplied artwork wins over the drawn mark. Decorative either
+    // way — the heading and line carry the meaning for screen readers.
+    const mark = n.icon
+      ? `<img class="notice__icon" src="${escapeAttr(n.icon)}" alt="" width="40" height="40">`
+      : `<span class="notice__icon">${MARKS[n.key] || ""}</span>`;
+    el.innerHTML = `
+      ${mark}
+      <div class="notice__body">
+        <p class="notice__heading">${escapeHtml(n.heading || "")}</p>
+        ${n.line ? `<p class="notice__line">${escapeHtml(n.line)}</p>` : ""}
+      </div>`;
+    strip.appendChild(el);
+  }
+}
+
 function paintStaticCopy() {
-  $("#announce").textContent = BRAND.shippingLine;
+  // Announcement bar carries the pre-sale flag first — it's the thing a
+  // shopper most needs to know before they start adding to a cart — then
+  // the shipping line, which stays display-only.
+  const announce = $("#announce");
+  const P = BRAND.presale || {};
+  announce.innerHTML = "";
+  if (P.active && P.label) {
+    const flag = document.createElement("strong");
+    flag.className = "announce__flag";
+    flag.textContent = [P.label, P.line].filter(Boolean).join(" \u2014 ");
+    announce.appendChild(flag);
+  }
+  announce.appendChild(document.createTextNode(BRAND.shippingLine));
   const nameEl = $("#brand-name");
   if (BRAND.logo && BRAND.logoIncludesName) {
     nameEl.className = "visually-hidden";   // keep for screen readers
@@ -561,6 +854,8 @@ async function init() {
   // page; a shop that renders without its header still sells.
   try {
     paintStaticCopy();
+    paintNotices();
+    initHelp();
   } catch (err) {
     console.error("[chrome] header/footer failed to paint", err);
   }
@@ -579,7 +874,7 @@ async function init() {
       $("#grid").className = "";
       $("#grid").innerHTML = `<div class="state">
         <h2 class="state__title">Nothing on tap yet</h2>
-        <p>This shop doesn't have any beer listed right now. Check back soon.</p>
+        <p>This shop doesn't have any cocktails listed right now. Check back soon.</p>
       </div>`;
       return;
     }

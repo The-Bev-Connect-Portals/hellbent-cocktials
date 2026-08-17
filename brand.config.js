@@ -74,6 +74,72 @@ export const BRAND = {
   // Real state list is attorney-pending. Do not name states here.
   shippingLine: "Shipping to select states. Enter your address at checkout to confirm.",
 
+  // ── Pre-sale ──────────────────────────────────────────────
+  // Set `active: false` the day stock ships and the whole treatment
+  // disappears — announcement bar line, notice card, and cart drawer note.
+  //
+  // `window` is deliberately empty. "Shipping soon" is vague enough to be
+  // safe but weak enough to generate support email; replace it with a real
+  // window ("Ships the week of Oct 6") as soon as one is confirmed, and it
+  // will render everywhere the pre-sale copy appears.
+  presale: {
+    active: true,
+    label: "Pre-Sale Only",
+    line: "Shipping soon",
+    window: "",
+    note: "You're pre-ordering. Your card is charged today and your order " +
+          "ships as soon as stock lands.",
+  },
+
+  // ── Minimum order quantity ────────────────────────────────
+  //  THE PORTAL DOES NOT ENFORCE THIS. It sets expectations and disables
+  //  its own checkout button — but the cart is localStorage and the
+  //  Shopify checkout URL is a plain shareable link. Real enforcement is
+  //  the Yuko validation function (Shopify Functions) on the store.
+  //
+  //  ⚠ `scope` MUST match how the Yuko rule is configured, or the site
+  //  says one thing and checkout blocks on another:
+  //    "cart" → Yuko scope Cart, minimum 2 total items (any mix)
+  //    "line" → Yuko scope Product/Variant, minimum 2 of each item
+  //
+  //  ⚠ The Yuko rule MUST be scoped to Hellbent products only — the
+  //  `portal:hellbent` collection. bro-basket.myshopify.com is one store
+  //  serving BroBasket and Go-To Gifting too; an unscoped rule puts a
+  //  2-item minimum on every gift basket order on the account.
+  minOrder: {
+    active: true,
+    qty: 2,
+    scope: "cart",
+    // Unit-neutral on purpose. The catalog mixes single cans, 4-packs and
+    // boxes, so "2 cans" would be wrong the moment someone adds a 4-pack.
+    heading: "2-item minimum",
+    line: "Orders start at two items. Mix and match any flavors you like.",
+  },
+
+  // ── Launch promo ──────────────────────────────────────────
+  // Manually switched off once 250 orders are in. Comics are fulfilled
+  // separately after the fact — this is copy only, nothing is added to
+  // the cart and nothing reaches the Bev Connect pick list.
+  promo: {
+    active: true,
+    heading: "First 250 orders",
+    line: "Get a free signed comic book, shipped separately after your order.",
+  },
+
+  // ── Help widget ───────────────────────────────────────────
+  // Floating "?" button, bottom right. Posts to Netlify Forms — no
+  // backend. Submissions land in the Netlify dashboard under this form
+  // name; set the notification email there (Site configuration → Forms →
+  // Form notifications), or nobody sees them.
+  helpForm: {
+    active: true,
+    formName: "hellbent-help",
+    heading: "Need a hand?",
+    line: "Questions about an order, shipping, or the pre-sale? Send a note " +
+          "and we'll get back to you.",
+    success: "Thanks — we've got it. We'll reply by email shortly.",
+  },
+
   // Shown if the catalog fails to load. Go-To Gifting is the seller of
   // record; Hellbent publishes no public contact details.
   supportEmail: "james@gotogifting.com",
