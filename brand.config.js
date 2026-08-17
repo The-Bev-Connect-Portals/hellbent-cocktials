@@ -116,14 +116,25 @@ export const BRAND = {
     line: "Orders start at two items. Mix and match any flavors you like.",
   },
 
-  // ── Launch promo ──────────────────────────────────────────
+  // ── Launch promo — caution-tape ticker ────────────────────
+  // Rendered as a scrolling hazard-tape band under the hero, mirroring the
+  // ticker on hellbentcocktails.com. Geometry matched to their real asset
+  // (61px band, stripe bands ~15% of height, 45deg lean, ~30px/s) but drawn
+  // in CSS from the palette rather than hotlinking their webp — no
+  // dependency on their CDN, and it recolors with the brand tokens.
+  //
   // Manually switched off once 250 orders are in. Comics are fulfilled
   // separately after the fact — this is copy only, nothing is added to
   // the cart and nothing reaches the Bev Connect pick list.
+  //
+  // `tickerText` is what scrolls, so keep it short — it repeats. `line` is
+  // the full sentence: read once by screen readers, and shown as static
+  // text instead of the scroll when the visitor prefers reduced motion.
   promo: {
     active: true,
-    heading: "First 250 orders",
-    line: "Get a free signed comic book, shipped separately after your order.",
+    tickerText: "First 250 orders get a free signed comic book",
+    line: "First 250 orders get a free signed comic book, shipped " +
+          "separately after your order.",
   },
 
   // ── Help widget ───────────────────────────────────────────
