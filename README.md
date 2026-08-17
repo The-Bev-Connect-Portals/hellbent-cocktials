@@ -78,7 +78,7 @@ flipping one `active` flag — no markup changes.
 |---|---|---|
 | `presale` | Stock ships | Announcement-bar flag, notice card, cart drawer note |
 | `minOrder` | Minimum is dropped | Notice card, cart gate, checkout block |
-| `promo` | 250th order is in | "First 250 orders" notice card |
+| `promo` | 250th order is in | Caution-tape ticker band |
 
 `presale.window` is empty. "Shipping soon" is vague enough to be safe but
 weak enough to generate support email — put a real window in
@@ -88,6 +88,42 @@ everywhere the pre-sale copy appears.
 The comic book is copy only. Nothing is added to the cart, no `$0` SKU is
 created, and nothing reaches a Bev Connect pick list — comics are fulfilled
 separately after the fact and the flag is switched off by hand at 250.
+
+### The caution-tape ticker
+
+The promo renders as a scrolling hazard-tape band under the hero, mirroring
+the ticker on hellbentcocktails.com. Their real band was measured and matched:
+
+| | Theirs | Ours |
+|---|---|---|
+| Band height | 61px | 61px (44px under 680px) |
+| Stripe bands | ~15% of height, top and bottom | same |
+| Stripe lean | 45deg | same |
+| Type | 32px uppercase, `line-height: 86%`, 20px span margin | same |
+| Speed | 2728px track, -1364px over 45s = ~30px/s | 30px/s, measured |
+
+Two deliberate differences:
+
+**The tape is drawn in CSS, not their image.** Their band is a hosted webp
+(`ticker-blank-scaled.webp`). Reproducing it with `repeating-linear-gradient`
+off `--accent` / `--accent-text` means no dependency on their CDN, nothing of
+theirs committed here, and it recolors automatically if the palette changes.
+
+**The speed is derived, not hardcoded.** `paintTape()` builds a half wide
+enough to cover the viewport, clones it, and sets the duration from the
+measured width so ~30px/s holds regardless of how long `tickerText` is.
+Change the copy and the cadence stays right.
+
+Type is Oswald, not their licensed `doubletracker` — same substitution noted
+for the rest of the portal.
+
+**Motion.** WCAG 2.2.2 wants a way to stop content that moves for more than
+five seconds, so the band pauses on hover, pauses on keyboard focus, and has
+a pause/play control. Under `prefers-reduced-motion` the scroll is dropped
+entirely for a static centred line, which is why `promo.line` carries the
+full sentence while `promo.tickerText` carries the short repeating one.
+Screen readers read `promo.line` once; the scrolling copies are
+`aria-hidden`. Their site does none of this.
 
 ### The minimum is NOT enforced by this repo
 

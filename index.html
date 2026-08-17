@@ -41,7 +41,20 @@
     <img class="hero__badge" id="hero-badge" alt="" hidden>
   </section>
 
-  <!-- Pre-sale / minimum-order / promo notices. Painted by app.js from
+  <!-- Caution-tape ticker, mirroring the band under the hero on
+       hellbentcocktails.com. Built by app.js from BRAND.promo. -->
+  <section class="tape" id="tape" hidden>
+    <p class="visually-hidden" id="tape-readable"></p>
+    <div class="tape__track" id="tape-track" aria-hidden="true"></div>
+    <p class="tape__static" id="tape-static" hidden></p>
+    <span class="tape__fade" aria-hidden="true"></span>
+    <button class="tape__pause" id="tape-pause" type="button" aria-pressed="false">
+      <span class="visually-hidden">Pause the scrolling banner</span>
+      <span class="tape__pause-icon" aria-hidden="true"></span>
+    </button>
+  </section>
+
+  <!-- Pre-sale / minimum-order notices. Painted by app.js from
        brand.config.js; the whole strip removes itself when nothing is active. -->
   <aside class="notices" id="notices" aria-label="Ordering information" hidden></aside>
 

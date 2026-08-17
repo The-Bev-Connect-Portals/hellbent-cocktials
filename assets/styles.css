@@ -167,6 +167,138 @@ a { color: inherit; }
   margin: 1.1rem 0 0; max-width: 32ch;
 }
 
+/* ── Caution-tape ticker ──────────────────────────────────── */
+/* Geometry measured off their own ticker-blank asset (2560x114): stripe
+   bands are ~15% of the height top and bottom, leaning 45deg, horizontal
+   period ~106px at that scale. Drawn here in CSS from --accent and
+   --accent-text so it needs no image and follows the palette. */
+.tape {
+  --tape-h: 61px;
+  --stripe-band: 9px;       /* ~15% of 61px, as in their artwork */
+  --stripe-ink: 21px;       /* black run, measured perpendicular */
+  --stripe-period: 40px;    /* black + amber, perpendicular */
+  position: relative;
+  height: var(--tape-h);
+  margin-bottom: 1.75rem;
+  background: var(--accent);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+.tape[hidden] { display: none; }
+
+/* Hazard stripes, top and bottom edges only. */
+.tape::before,
+.tape::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0;
+  height: var(--stripe-band);
+  background: repeating-linear-gradient(45deg,
+    var(--accent-text) 0 var(--stripe-ink),
+    var(--accent) var(--stripe-ink) var(--stripe-period));
+  z-index: 1;
+  pointer-events: none;
+}
+.tape::before { top: 0; }
+.tape::after  { bottom: 0; }
+
+.tape__track {
+  display: flex;
+  flex: none;
+  will-change: transform;
+  animation: tape-scroll var(--tape-duration, 45s) linear infinite;
+}
+.tape__half { display: flex; flex: none; }
+
+.tape__track span {
+  flex: none;
+  margin: 0 20px;                        /* their spacing */
+  font-family: var(--font-display);
+  font-size: 32px;
+  line-height: 86%;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--accent-text);
+  white-space: nowrap;
+}
+
+@keyframes tape-scroll {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+
+/* Stop on hover and on keyboard focus as well as via the button — a
+   shopper trying to read it shouldn't have to chase it. */
+.tape:hover .tape__track,
+.tape:focus-within .tape__track,
+.tape[data-paused="true"] .tape__track { animation-play-state: paused; }
+
+/* Shown instead of the scroll when motion is reduced. */
+.tape__static {
+  margin: 0 auto;
+  padding: 0 1.25rem;
+  font-family: var(--font-display);
+  font-size: clamp(0.85rem, 2.4vw, 1.15rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--accent-text);
+  text-align: center;
+}
+.tape__static[hidden] { display: none; }
+
+/* Amber gutter so the scrolling copy fades out before it reaches the pause
+   control instead of colliding with it. Inset top and bottom so the hazard
+   stripes still run edge to edge behind it. */
+.tape__fade {
+  position: absolute;
+  right: 0;
+  top: var(--stripe-band);
+  bottom: var(--stripe-band);
+  width: 110px;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(to right, transparent, var(--accent) 60%);
+}
+
+/* WCAG 2.2.2 — moving content that runs past five seconds needs a way to
+   stop it. Sits inside the band, deliberately quiet. */
+.tape__pause {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+  width: 30px; height: 30px;
+  display: flex; align-items: center; justify-content: center;
+  border: 0; border-radius: 999px;
+  background: transparent;
+  color: var(--accent-text);
+  opacity: 0.6;
+  transition: opacity 0.14s, background 0.14s;
+}
+.tape__pause:hover,
+.tape__pause:focus-visible {
+  opacity: 1;
+  background: color-mix(in srgb, var(--accent-text) 16%, transparent);
+}
+
+/* Two bars — becomes a single play triangle when paused. */
+.tape__pause-icon {
+  width: 10px; height: 12px;
+  border-left: 3.5px solid currentColor;
+  border-right: 3.5px solid currentColor;
+}
+.tape[data-paused="true"] .tape__pause-icon {
+  width: 0; height: 0;
+  border-left: 11px solid currentColor;
+  border-right: 0;
+  border-top: 7px solid transparent;
+  border-bottom: 7px solid transparent;
+  margin-left: 3px;
+}
+
 /* ── Notice strip ─────────────────────────────────────────── */
 /* Pre-sale, minimum order, launch promo. Sits between the hero and the
    grid so it's read before anything is added to a cart. */
@@ -774,6 +906,17 @@ body[data-drawer="open"] .help-panel { display: none; }
   .line__remove { min-height: 44px; }
   .checkout-btn { min-height: 48px; }
 
+  .tape {
+    --tape-h: 44px;
+    --stripe-band: 7px;
+    --stripe-ink: 15px;
+    --stripe-period: 29px;
+    margin-bottom: 1.25rem;
+  }
+  .tape__track span { font-size: 20px; margin: 0 14px; }
+  .tape__fade { width: 76px; }
+  .tape__pause { right: 0.35rem; width: 34px; height: 34px; }
+
   .notices {
     padding: 0 1rem;
     margin-bottom: 1.25rem;
@@ -815,4 +958,8 @@ body[data-drawer="open"] .help-panel { display: none; }
     transition-duration: 0.01ms !important;
   }
   .drawer { transition: none; }
+  /* Belt and braces: paintTape() already removes the track under reduced
+     motion and shows the static line. If JS hasn't run yet, this stops the
+     global 0.01ms rule from snapping the marquee to its end frame. */
+  .tape__track { animation: none !important; transform: none !important; }
 }

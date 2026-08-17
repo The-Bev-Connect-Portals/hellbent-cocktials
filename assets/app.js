@@ -658,7 +658,82 @@ function initHelp() {
    ═══════════════════════════════════════════════════════════ */
 
 /* ═══════════════════════════════════════════════════════════
-   Notice strip — pre-sale, minimum order, launch promo
+   Caution-tape ticker
+
+   Mirrors the band under the hero on hellbentcocktails.com. Their real
+   one is a 2728px track scrolling -1364px over 45s — about 30px/s. That
+   cadence is matched here by measuring the built track and deriving the
+   duration, so the speed stays right no matter how long the copy is.
+
+   The track is two identical halves and animates to -50%, which is what
+   makes the loop seamless. Screen readers get one clean copy from the
+   visually-hidden paragraph; the scrolling duplicates are aria-hidden.
+
+   Motion: WCAG 2.2.2 wants a way to stop content that moves for more
+   than five seconds, so there's a pause control, it pauses on hover and
+   on keyboard focus, and prefers-reduced-motion drops the scroll for a
+   static line instead. Their site does none of this; ours should.
+   ═══════════════════════════════════════════════════════════ */
+
+const TAPE_SPEED = 30;   // px per second — measured off their ticker
+
+function paintTape() {
+  const tape = $("#tape");
+  if (!tape) return;
+
+  const R = BRAND.promo || {};
+  const text = R.tickerText || R.line;
+  if (!R.active || !text) { tape.remove(); return; }
+
+  tape.hidden = false;
+  $("#tape-readable").textContent = R.line || text;
+  $("#tape-static").textContent = R.line || text;
+
+  const track = $("#tape-track");
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (reduced) {
+    // No scroll at all. The static line carries the message instead —
+    // a marquee frozen mid-transform would just be clipped copy.
+    track.remove();
+    $("#tape-static").hidden = false;
+    $("#tape-pause").remove();
+    return;
+  }
+
+  // Build one half wide enough to cover the viewport, then clone it. A
+  // half narrower than the screen would show a gap at the wrap point.
+  const half = document.createElement("div");
+  half.className = "tape__half";
+  const makeSpan = () => {
+    const s = document.createElement("span");
+    s.textContent = text;
+    return s;
+  };
+
+  half.appendChild(makeSpan());
+  track.appendChild(half);
+  let guard = 0;
+  while (half.offsetWidth < window.innerWidth && guard++ < 40) {
+    half.appendChild(makeSpan());
+  }
+
+  const halfWidth = half.offsetWidth;
+  track.appendChild(half.cloneNode(true));
+  track.style.setProperty("--tape-duration", `${(halfWidth / TAPE_SPEED).toFixed(1)}s`);
+
+  const pause = $("#tape-pause");
+  pause.addEventListener("click", () => {
+    const now = tape.dataset.paused !== "true";
+    tape.dataset.paused = String(now);
+    pause.setAttribute("aria-pressed", String(now));
+    pause.querySelector(".visually-hidden").textContent =
+      now ? "Resume the scrolling banner" : "Pause the scrolling banner";
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Notice strip — pre-sale, minimum order
 
    Icons are inline SVG in the brand's own accent colors rather than
    image files, so there's nothing to art-direct, nothing to load, and
@@ -677,14 +752,6 @@ const MARKS = {
           text-anchor="end" font-family="system-ui, sans-serif">&#215;2</text>
   </svg>`,
 
-  // Comic panel with a burst — the giveaway.
-  promo: `<svg viewBox="0 0 40 40" fill="none" aria-hidden="true">
-    <rect x="4" y="6" width="26" height="28" rx="2.6" stroke="currentColor" stroke-width="2.2"/>
-    <path d="M9 12h9M9 17h9M9 22h6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
-    <path d="M28.5 19.5l2.1 4.4 4.9.7-3.5 3.4.8 4.8-4.3-2.3-4.3 2.3.8-4.8-3.5-3.4 4.9-.7z"
-          stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>
-  </svg>`,
-
   // Clock — pre-sale, shipping later.
   presale: `<svg viewBox="0 0 40 40" fill="none" aria-hidden="true">
     <circle cx="20" cy="20" r="15" stroke="currentColor" stroke-width="2.2"/>
@@ -699,16 +766,14 @@ function paintNotices() {
 
   const P = BRAND.presale || {};
   const M = BRAND.minOrder || {};
-  const R = BRAND.promo || {};
 
   const items = [];
 
   if (M.active && Number(M.qty) > 1) {
     items.push({ key: "min", icon: M.icon, heading: M.heading, line: M.line, lead: true });
   }
-  if (R.active) {
-    items.push({ key: "promo", icon: R.icon, heading: R.heading, line: R.line });
-  }
+  // The 250-order promo is NOT here — it has its own caution-tape band
+  // above the strip. Adding it back would say the same thing twice.
   if (P.active) {
     const heading = [P.label, P.line].filter(Boolean).join(" \u2014 ");
     const line = P.window
@@ -854,6 +919,7 @@ async function init() {
   // page; a shop that renders without its header still sells.
   try {
     paintStaticCopy();
+    paintTape();
     paintNotices();
     initHelp();
   } catch (err) {
