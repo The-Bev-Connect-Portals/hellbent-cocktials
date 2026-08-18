@@ -88,7 +88,7 @@ export const BRAND = {
     line: "Shipping soon",
     window: "",
     note: "You're pre-ordering. Your card is charged today and your order " +
-          "ships as soon as stock lands.",
+          "ships as soon as stock lands \u2014 we're expecting days, not weeks.",
   },
 
   // ── Minimum order quantity ────────────────────────────────
@@ -132,9 +132,10 @@ export const BRAND = {
   // text instead of the scroll when the visitor prefers reduced motion.
   promo: {
     active: true,
-    tickerText: "First 250 orders get a free signed comic book",
-    line: "First 250 orders get a free signed comic book, shipped " +
-          "separately after your order.",
+    tickerText: "First 250 orders get a signed Joe Madureira print",
+    line: "First 250 orders will receive a limited-edition HELLBENT print, " +
+          "created and signed by Joe Madureira, shipped separately after " +
+          "your order.",
   },
 
   // ── Help widget ───────────────────────────────────────────

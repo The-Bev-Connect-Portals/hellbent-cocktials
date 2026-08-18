@@ -248,6 +248,17 @@ a { color: inherit; }
 }
 .tape__static[hidden] { display: none; }
 
+/* Static mode carries the full sentence, not the short ticker string, so
+   the band grows to fit rather than clipping it. Vertical padding clears
+   the stripe bands; the fade gutter is pointless with nothing scrolling
+   and would just dim the end of the sentence. */
+.tape[data-static="true"] {
+  height: auto;
+  min-height: var(--tape-h);
+  padding: 0.9rem 1.5rem;
+}
+.tape[data-static="true"] .tape__fade { display: none; }
+
 /* Amber gutter so the scrolling copy fades out before it reaches the pause
    control instead of colliding with it. Inset top and bottom so the hazard
    stripes still run edge to edge behind it. */

@@ -698,6 +698,9 @@ function paintTape() {
     track.remove();
     $("#tape-static").hidden = false;
     $("#tape-pause").remove();
+    // Lets the band grow to fit. promo.line is a full sentence and will
+    // wrap on narrow screens, where the ticker string never would.
+    tape.dataset.static = "true";
     return;
   }
 
