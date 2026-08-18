@@ -172,7 +172,7 @@ export const BRAND = {
   // scoped to public product data. NEVER put an Admin token here.
   shopDomain:      "bro-basket.myshopify.com",
   storefrontToken: "9a66fb83a2b5039a596997d1f574aafe",  // Hellbent Headless storefront
-  apiVersion:      "2025-01",
+  apiVersion:      "2026-04",
 
   sourceTag: "hellbent-portal",
 
