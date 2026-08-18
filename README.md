@@ -80,6 +80,13 @@ flipping one `active` flag — no markup changes.
 | `minOrder` | Minimum is dropped | Notice card, cart gate, checkout block |
 | `promo` | 250th order is in | Caution-tape ticker band |
 
+`promo.tickerText` is the short string that scrolls; `promo.line` is the
+full sentence, read once by screen readers and shown as static text under
+reduced motion. Keep the ticker string short — at ~30px/s a long sentence
+takes the better part of a minute to cross the screen, so a shopper
+scrolling past catches a fragment instead of the offer. The band grows to
+fit in static mode, so `line` can be as long as it needs to be.
+
 `presale.window` is empty. "Shipping soon" is vague enough to be safe but
 weak enough to generate support email — put a real window in
 (`"Ships the week of Oct 6"`) as soon as one is confirmed and it renders
