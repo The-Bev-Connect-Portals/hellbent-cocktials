@@ -132,10 +132,12 @@ export const BRAND = {
   // text instead of the scroll when the visitor prefers reduced motion.
   promo: {
     active: true,
-    tickerText: "First 250 orders get a signed Joe Madureira print",
-    line: "First 250 orders will receive a limited-edition HELLBENT print, " +
-          "created and signed by Joe Madureira, shipped separately after " +
-          "your order.",
+    tickerText: "The first 250 orders will receive a limited-edition, "
+              + "original HELLBENT print created and signed by comic "
+              + "book artist Joe Madureira.",
+    line: "The first 250 orders will receive a limited-edition, original " +
+          "HELLBENT print created and signed by comic book artist " +
+          "Joe Madureira, shipped separately after your order.",
   },
 
   // ── Help widget ───────────────────────────────────────────
@@ -154,7 +156,7 @@ export const BRAND = {
 
   // Shown if the catalog fails to load. Go-To Gifting is the seller of
   // record; Hellbent publishes no public contact details.
-  supportEmail: "james@gotogifting.com",
+  supportEmail: "help@hellbentcocktails.com",
   supportPhone: "",
 
   // ── Filters ───────────────────────────────────────────────
