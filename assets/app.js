@@ -147,8 +147,12 @@ try {
   if (!Array.isArray(cart)) cart = [];
 } catch { cart = []; }
 
-function saveCart() {
+function persistCart() {
   try { localStorage.setItem(CART_KEY, JSON.stringify(cart)); } catch {}
+}
+
+function saveCart() {
+  persistCart();
   renderCartButton();
   renderCart();
 }
@@ -174,8 +178,30 @@ function setQty(variantId, qty) {
   const line = cart.find((l) => l.variantId === variantId);
   if (!line) return;
   line.qty = qty;
-  if (line.qty < 1) cart = cart.filter((l) => l.variantId !== variantId);
-  saveCart();
+
+  // Removing a line changes the shape of the drawer, so rebuild it.
+  if (line.qty < 1) {
+    cart = cart.filter((l) => l.variantId !== variantId);
+    saveCart();
+    return;
+  }
+
+  // A quantity change does NOT change the shape. Rebuilding here would
+  // destroy the +/- button under the shopper's finger and replace it with a
+  // new node mid-tap, which drops fast repeat taps on touch devices, throws
+  // away focus, and re-inserts the thumbnail so it visibly flickers. Patch
+  // the two pieces of text that actually changed instead.
+  const row = $(`#drawer-body .line[data-variant-id="${variantId}"]`);
+  if (!row) { saveCart(); return; }
+
+  row.querySelector(".stepper output").textContent = line.qty;
+  row.querySelector(".line__price").textContent =
+    money(Number(line.price) * line.qty, line.currency);
+
+  persistCart();
+  renderCartButton();
+  $("#cart-total").textContent = money(cartTotal(), cart[0].currency);
+  renderCartGate();
 }
 
 const cartCount = () => cart.reduce((n, l) => n + l.qty, 0);
@@ -366,6 +392,7 @@ function renderCart() {
   for (const line of cart) {
     const el = document.createElement("div");
     el.className = "line";
+    el.dataset.variantId = line.variantId;
     el.innerHTML = `
       ${line.image ? `<img class="line__img" src="${line.image}" alt="" loading="lazy">`
                    : `<div class="line__img"></div>`}

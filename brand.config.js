@@ -83,7 +83,7 @@ export const BRAND = {
   // window ("Ships the week of Oct 6") as soon as one is confirmed, and it
   // will render everywhere the pre-sale copy appears.
   presale: {
-    active: true,
+    active: false,
     label: "Pre-Sale Only",
     line: "Shipping soon",
     window: "",
@@ -131,7 +131,7 @@ export const BRAND = {
   // the full sentence: read once by screen readers, and shown as static
   // text instead of the scroll when the visitor prefers reduced motion.
   promo: {
-    active: true,
+    active: false,
     tickerText: "The first 250 orders will receive a limited-edition, "
               + "original HELLBENT print created and signed by comic "
               + "book artist Joe Madureira.",
@@ -149,7 +149,7 @@ export const BRAND = {
     active: true,
     formName: "hellbent-help",
     heading: "Need a hand?",
-    line: "Questions about an order, shipping, or the pre-sale? Send a note " +
+    line: "Questions about an order or shipping? Send a note " +
           "and we'll get back to you.",
     success: "Thanks — we've got it. We'll reply by email shortly.",
   },
