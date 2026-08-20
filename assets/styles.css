@@ -578,6 +578,23 @@ a { color: inherit; }
 .drawer__total span:last-child { font-variant-numeric: tabular-nums; }
 .drawer__tax { font-size: 0.75rem; color: var(--muted); margin: 0 0 0.9rem; }
 
+/* Adding an item force-opens the drawer, which on a phone covers the whole
+   viewport. Without this the only way back to the grid is the small x in the
+   header — and the minimum-order notice tells shoppers to add another item
+   while giving them nothing to press. This is that affordance. */
+.continue-btn {
+  width: 100%; background: transparent; color: var(--fg);
+  border: 1px solid var(--border); border-radius: 999px; padding: 0.9rem;
+  font-size: 0.95rem; font-weight: 700; margin-bottom: 0.6rem;
+  transition: border-color 0.14s, color 0.14s;
+}
+.continue-btn:hover { border-color: var(--accent); color: var(--accent); }
+/* Short of the minimum, this is the real next step and Checkout is the dead
+   end — so the two swap visual weight. */
+.drawer__foot[data-below-min="true"] .continue-btn {
+  background: var(--accent); color: var(--accent-text); border-color: var(--accent);
+}
+
 .checkout-btn {
   width: 100%; background: var(--accent); color: var(--accent-text);
   border: 0; border-radius: 999px; padding: 0.9rem;

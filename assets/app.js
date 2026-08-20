@@ -416,6 +416,8 @@ function renderCartGate() {
   if (!box || !btn) return;
 
   const issue = minOrderIssue();
+  const foot = $("#drawer-foot");
+  if (foot) foot.dataset.belowMin = issue ? "true" : "false";
   if (issue) {
     box.textContent = issue;
     box.hidden = false;
@@ -932,6 +934,9 @@ async function init() {
   renderCart();
 
   $("#cart-open").addEventListener("click", openDrawer);
+  // Returns the shopper to the grid. Deliberately not a scroll-to-top: the
+  // drawer is an overlay, so closing it leaves them exactly where they were.
+  $("#continue-shopping")?.addEventListener("click", closeDrawer);
   $("#drawer-close").addEventListener("click", closeDrawer);
   $("#scrim").addEventListener("click", closeDrawer);
   $("#checkout").addEventListener("click", checkout);
