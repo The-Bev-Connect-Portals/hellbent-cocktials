@@ -159,7 +159,7 @@ export const BRAND = {
 
   // Shown if the catalog fails to load. Go-To Gifting is the seller of
   // record; Hellbent publishes no public contact details.
-  supportEmail: "help@hellbentcocktails.com",
+  supportEmail: "cheers@hellbentcocktails.com",
   supportPhone: "",
 
   // ── Filters ───────────────────────────────────────────────
