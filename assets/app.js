@@ -804,7 +804,7 @@ function paintNotices() {
   if (M.active && Number(M.qty) > 1) {
     items.push({ key: "min", icon: M.icon, heading: M.heading, line: M.line, lead: true });
   }
-  // The 250-order promo is NOT here — it has its own caution-tape band
+  // The 100-order promo is NOT here — it has its own caution-tape band
   // above the strip. Adding it back would say the same thing twice.
   if (P.active) {
     const heading = [P.label, P.line].filter(Boolean).join(" \u2014 ");

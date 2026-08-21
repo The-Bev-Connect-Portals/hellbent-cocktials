@@ -17,11 +17,14 @@ export const BRAND = {
   // so it sits inline with "Shop" at matching optical weight.
   heroMark: "/assets/wordmark.png",
 
-  // Product claim badge in the hero. Their supplied artwork, used as-is —
-  // it's designed black-on-white and reads as a printed stamp on the dark page.
+  // Hero artwork. Client-supplied. NOTE: the promotional copy is baked into
+  // the image, so `label` is the only version a screen reader or a failed
+  // image load will ever surface — keep it a faithful transcription.
   heroBadge: {
-    image: "/assets/two-cocktails-badge.png",
-    label: "Two cocktails per can",
+    image: "/assets/promo-print-badge.png",
+    label: "The first 100 orders will receive an original, limited-edition "
+         + "Hellbent print created and signed by renowned comic book artist "
+         + "Joe Madureira.",
   },
   logoIncludesName: true,          // wordmark already reads "HELLBENT"
   favicon: "/assets/favicon.png",
@@ -123,7 +126,7 @@ export const BRAND = {
   // in CSS from the palette rather than hotlinking their webp — no
   // dependency on their CDN, and it recolors with the brand tokens.
   //
-  // Manually switched off once 250 orders are in. Comics are fulfilled
+  // Manually switched off once 100 orders are in. Prints are fulfilled
   // separately after the fact — this is copy only, nothing is added to
   // the cart and nothing reaches the Bev Connect pick list.
   //
@@ -132,11 +135,11 @@ export const BRAND = {
   // text instead of the scroll when the visitor prefers reduced motion.
   promo: {
     active: false,
-    tickerText: "The first 250 orders will receive a limited-edition, "
-              + "original HELLBENT print created and signed by comic "
-              + "book artist Joe Madureira.",
-    line: "The first 250 orders will receive a limited-edition, original " +
-          "HELLBENT print created and signed by comic book artist " +
+    tickerText: "The first 100 orders will receive an original, "
+              + "limited-edition Hellbent print created and signed by "
+              + "renowned comic book artist Joe Madureira.",
+    line: "The first 100 orders will receive an original, limited-edition " +
+          "Hellbent print created and signed by renowned comic book artist " +
           "Joe Madureira, shipped separately after your order.",
   },
 
