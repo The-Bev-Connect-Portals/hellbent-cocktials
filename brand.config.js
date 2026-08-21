@@ -176,8 +176,8 @@ export const BRAND = {
   // ── Shopify ───────────────────────────────────────────────
   // Public Storefront token. Safe to ship client-side: read-only,
   // scoped to public product data. NEVER put an Admin token here.
-  shopDomain:      "bro-basket.myshopify.com",
-  storefrontToken: "9a66fb83a2b5039a596997d1f574aafe",  // Hellbent Headless storefront
+  shopDomain:      "nbeywv-yp.myshopify.com",
+  storefrontToken: "0795759b6536d6b40d587d5da785a2c9",  // Hellbent Headless storefront
   apiVersion:      "2026-04",
 
   sourceTag: "hellbent-portal",
