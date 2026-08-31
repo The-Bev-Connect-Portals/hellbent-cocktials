@@ -775,13 +775,37 @@ function paintTape() {
    ═══════════════════════════════════════════════════════════ */
 
 const MARKS = {
-  // Two cans side by side with a "×2" — reads as the minimum at a glance.
+  // A 4-pack carrier with a "×2" — reads as the minimum at a glance.
+  // The can tops are open-bottomed paths so the carrier's top edge closes
+  // them off; a plain rect would leave a line running through the wrap.
   min: `<svg viewBox="0 0 60 40" fill="none" aria-hidden="true">
-    <rect x="2" y="7" width="13" height="27" rx="3.2" stroke="currentColor" stroke-width="2.2"/>
-    <rect x="17" y="7" width="13" height="27" rx="3.2" stroke="currentColor" stroke-width="2.2"/>
-    <path d="M2 14h13M17 14h13" stroke="currentColor" stroke-width="2.2"/>
+    <path d="M3.4 16V9.4A1.4 1.4 0 0 1 4.8 8h2.6a1.4 1.4 0 0 1 1.4 1.4V16
+             M10.2 16V9.4A1.4 1.4 0 0 1 11.6 8h2.6a1.4 1.4 0 0 1 1.4 1.4V16
+             M17 16V9.4A1.4 1.4 0 0 1 18.4 8H21a1.4 1.4 0 0 1 1.4 1.4V16
+             M23.8 16V9.4A1.4 1.4 0 0 1 25.2 8h2.6a1.4 1.4 0 0 1 1.4 1.4V16"
+          stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    <rect x="2" y="16" width="28" height="17" rx="2.4"
+          stroke="currentColor" stroke-width="2.2"/>
+    <path d="M2 24.5h28" stroke="currentColor" stroke-width="1.8"/>
     <text x="58" y="28" font-size="19" font-weight="700" fill="currentColor"
           text-anchor="end" font-family="system-ui, sans-serif">&#215;2</text>
+  </svg>`,
+
+  // A 6/4pk case, drawn as the same 4-pack carrier "×6". Deliberately the
+  // same glyph as `min` — one unit, two thresholds — so the numeral is the
+  // only thing a shopper has to read. A carton outline was tried first and
+  // scanned as a generic box; the carrier reads as cans at 46px.
+  freeship: `<svg viewBox="0 0 60 40" fill="none" aria-hidden="true">
+    <path d="M3.4 16V9.4A1.4 1.4 0 0 1 4.8 8h2.6a1.4 1.4 0 0 1 1.4 1.4V16
+             M10.2 16V9.4A1.4 1.4 0 0 1 11.6 8h2.6a1.4 1.4 0 0 1 1.4 1.4V16
+             M17 16V9.4A1.4 1.4 0 0 1 18.4 8H21a1.4 1.4 0 0 1 1.4 1.4V16
+             M23.8 16V9.4A1.4 1.4 0 0 1 25.2 8h2.6a1.4 1.4 0 0 1 1.4 1.4V16"
+          stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    <rect x="2" y="16" width="28" height="17" rx="2.4"
+          stroke="currentColor" stroke-width="2.2"/>
+    <path d="M2 24.5h28" stroke="currentColor" stroke-width="1.8"/>
+    <text x="58" y="28" font-size="19" font-weight="700" fill="currentColor"
+          text-anchor="end" font-family="system-ui, sans-serif">&#215;6</text>
   </svg>`,
 
   // Clock — pre-sale, shipping later.
@@ -798,11 +822,18 @@ function paintNotices() {
 
   const P = BRAND.presale || {};
   const M = BRAND.minOrder || {};
+  const F = BRAND.freeShip || {};
 
   const items = [];
 
   if (M.active && Number(M.qty) > 1) {
     items.push({ key: "min", icon: M.icon, heading: M.heading, line: M.line, lead: true });
+  }
+  // Sits directly beside the minimum — the two together are the whole of
+  // "how many do I have to buy". Display only: the portal never computes a
+  // shipping cost, so this has to match the Shopify delivery profile.
+  if (F.active) {
+    items.push({ key: "freeship", icon: F.icon, heading: F.heading, line: F.line });
   }
   // The 100-order promo is NOT here — it has its own caution-tape band
   // above the strip. Adding it back would say the same thing twice.

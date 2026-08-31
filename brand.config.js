@@ -119,6 +119,25 @@ export const BRAND = {
     line: "Orders start at two items. Mix and match any flavors you like.",
   },
 
+  // ── Free shipping threshold ─────────────────────────
+  //  DISPLAY ONLY, exactly like minOrder. The portal never calculates a
+  //  shipping cost — Shopify does, at checkout, from the delivery profile.
+  //  This notice must match a real free-rate band on that profile or the
+  //  site promises something checkout won't honor.
+  //
+  //  ⚠ The Hellbent delivery profile is weight-banded, not quantity-banded.
+  //  Six items is roughly 6 × (product weight) + 1 lb box, so the free band
+  //  has to be expressed as the weight that six of the *lightest* item hits
+  //  — otherwise a six-pack-of-4-packs order falls into a paid band.
+  //  Re-sweep every zone after any band edit; deliveryProfileUpdate replaces
+  //  zones rather than merging them.
+  freeShip: {
+    active: true,
+    qty: 6,
+    heading: "Free shipping",
+    line: "Order six or more and shipping is on us.",
+  },
+
   // ── Launch promo — caution-tape ticker ────────────────────
   // Rendered as a scrolling hazard-tape band under the hero, mirroring the
   // ticker on hellbentcocktails.com. Geometry matched to their real asset
