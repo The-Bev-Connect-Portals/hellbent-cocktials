@@ -78,8 +78,12 @@
 
 <div class="scrim" id="scrim" data-open="false"></div>
 
+<!-- Closed state uses `inert`, not aria-hidden. aria-hidden only hides from
+     screen readers — the close button and checkout button stayed in the tab
+     order, so a keyboard user could Tab into an off-screen drawer. `inert`
+     removes the subtree from focus AND the accessibility tree. -->
 <aside class="drawer" id="drawer" data-open="false" role="dialog"
-       aria-modal="true" aria-labelledby="drawer-title" aria-hidden="true">
+       aria-modal="true" aria-labelledby="drawer-title" inert>
   <div class="drawer__head">
     <h2 class="drawer__title" id="drawer-title">Your Cart</h2>
     <button class="drawer__close" id="drawer-close" type="button" aria-label="Close cart">&times;</button>
@@ -116,8 +120,10 @@
   <span aria-hidden="true">?</span>
 </button>
 
+<!-- Same as the drawer: `inert` while closed. This panel holds a whole form
+     (name, email, order, message, submit) that was reachable by Tab. -->
 <div class="help-panel" id="help-panel" data-open="false" role="dialog"
-     aria-labelledby="help-title" aria-hidden="true">
+     aria-labelledby="help-title" inert>
   <div class="help-panel__head">
     <h2 class="help-panel__title" id="help-title"></h2>
     <button class="help-panel__close" id="help-close" type="button"
