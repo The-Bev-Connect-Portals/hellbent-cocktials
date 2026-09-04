@@ -479,7 +479,9 @@ function openDrawer() {
   lastFocus = document.activeElement;
   $("#drawer").dataset.open = "true";
   $("#scrim").dataset.open = "true";
-  $("#drawer").setAttribute("aria-hidden", "false");
+  // Must clear `inert` BEFORE focusing — focus() is a no-op inside an
+  // inert subtree.
+  $("#drawer").inert = false;
   document.body.style.overflow = "hidden";
   $("#drawer-close").focus();
   document.addEventListener("keydown", onDrawerKey);
@@ -489,10 +491,12 @@ function closeDrawer() {
   document.body.dataset.drawer = "closed";
   $("#drawer").dataset.open = "false";
   $("#scrim").dataset.open = "false";
-  $("#drawer").setAttribute("aria-hidden", "true");
   document.body.style.overflow = "";
   document.removeEventListener("keydown", onDrawerKey);
+  // Move focus out first, then seal the drawer. Setting inert while focus is
+  // still inside drops focus to <body> and loses the return point.
   lastFocus?.focus();
+  $("#drawer").inert = true;
 }
 
 function onDrawerKey(e) {
@@ -597,7 +601,7 @@ let helpLastFocus = null;
 function openHelp() {
   helpLastFocus = document.activeElement;
   $("#help-panel").dataset.open = "true";
-  $("#help-panel").setAttribute("aria-hidden", "false");
+  $("#help-panel").inert = false;
   $("#help-open").setAttribute("aria-expanded", "true");
   $("#help-name").focus();
   document.addEventListener("keydown", onHelpKey);
@@ -605,10 +609,10 @@ function openHelp() {
 
 function closeHelp() {
   $("#help-panel").dataset.open = "false";
-  $("#help-panel").setAttribute("aria-hidden", "true");
   $("#help-open").setAttribute("aria-expanded", "false");
   document.removeEventListener("keydown", onHelpKey);
   helpLastFocus?.focus();
+  $("#help-panel").inert = true;
 }
 
 // Escape closes. Deliberately NOT focus-trapped: this is a popover, not a
