@@ -131,11 +131,23 @@ export const BRAND = {
   //  — otherwise a six-pack-of-4-packs order falls into a paid band.
   //  Re-sweep every zone after any band edit; deliveryProfileUpdate replaces
   //  zones rather than merging them.
+  //  `unit` / `unitPlural` name what the threshold counts. Every SKU in the
+  //  catalog today is a 4-pack, so six items = six 4-packs. If a single-can
+  //  or case SKU is ever added, revisit this wording AND the Shopify band.
+  //
+  //  Counted across the whole cart, any mix — same as minOrder scope "cart".
   freeShip: {
     active: true,
     qty: 6,
-    heading: "Free shipping",
-    line: "Order six or more and shipping is on us.",
+    unit: "4-pack",
+    unitPlural: "4-packs",
+    heading: "Free shipping on 6+",
+    line: "Mix and match any six 4-packs and shipping is on us.",
+    // Appended to the announcement bar after `shippingLine`.
+    announce: "Free shipping on 6+ 4-packs",
+    // Cart drawer, once the threshold is met. Says where it shows up,
+    // because the portal never displays a shipping cost itself.
+    unlocked: "You've unlocked free shipping. It'll show at checkout.",
   },
 
   // ── Launch promo — caution-tape ticker ────────────────────
