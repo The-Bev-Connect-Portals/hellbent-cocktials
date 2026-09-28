@@ -246,6 +246,41 @@ function minOrderIssue() {
          `Add ${plural(short, "more item")} to check out.`;
 }
 
+/* ── Free-shipping threshold ─────────────────────────────────
+   Progress nudge only. The portal never calculates shipping; Shopify
+   does, from the weight-banded delivery profile. BRAND.freeShip.qty has
+   to line up with a real free band there or this promises something
+   checkout won't honor.
+   ──────────────────────────────────────────────────────────── */
+
+const FS = BRAND.freeShip || {};
+const FS_QTY = Number(FS.qty) || 0;
+const FS_ON = FS.active === true && FS_QTY > 0;
+const fsUnit = (n) => n === 1
+  ? (FS.unit || "item")
+  : (FS.unitPlural || `${FS.unit || "item"}s`);
+
+function renderShipMeter() {
+  const box = $("#drawer-ship");
+  if (!box) return;
+  if (!FS_ON || !cart.length) { box.hidden = true; box.innerHTML = ""; return; }
+
+  const n = cartCount();
+  const left = Math.max(0, FS_QTY - n);
+  const pct = Math.min(100, Math.round((n / FS_QTY) * 100));
+  box.dataset.unlocked = left === 0 ? "true" : "false";
+  box.hidden = false;
+  const msg = left === 0
+    ? escapeHtml(FS.unlocked || "You've unlocked free shipping.")
+    : `Add <strong>${left} more ${escapeHtml(fsUnit(left))}</strong> for free shipping.`;
+  box.innerHTML = `
+    <p class="ship-meter__msg">${msg}</p>
+    <div class="ship-meter__bar" role="progressbar" aria-label="Progress toward free shipping"
+         aria-valuemin="0" aria-valuemax="${FS_QTY}" aria-valuenow="${Math.min(n, FS_QTY)}">
+      <span style="width:${pct}%"></span>
+    </div>`;
+}
+
 const money = (amount, currency = "USD") =>
   new Intl.NumberFormat("en-US", { style: "currency", currency }).format(Number(amount));
 
@@ -381,8 +416,10 @@ function renderCart() {
     body.innerHTML = `<div class="drawer__empty">
       <p>Your cart is empty.</p>
       <p style="font-size:0.8rem">Pick your poison and it'll show up here.</p>
+      ${FS_ON && FS.announce ? `<p class="drawer__empty-ship">${escapeHtml(FS.announce)}.</p>` : ""}
     </div>`;
     foot.hidden = true;
+    renderShipMeter();
     return;
   }
 
@@ -427,6 +464,7 @@ function renderCart() {
 // The gate disables our own checkout button and says why; Yuko is what
 // actually stops a short order at Shopify's checkout.
 function renderCartGate() {
+  renderShipMeter();
   const presaleEl = $("#drawer-presale");
   const P = BRAND.presale || {};
   if (presaleEl) {
@@ -886,6 +924,13 @@ function paintStaticCopy() {
     announce.appendChild(flag);
   }
   announce.appendChild(document.createTextNode(BRAND.shippingLine));
+  const FSA = BRAND.freeShip || {};
+  if (FSA.active && FSA.announce) {
+    const fs = document.createElement("span");
+    fs.className = "announce__free";
+    fs.textContent = FSA.announce;
+    announce.appendChild(fs);
+  }
   const nameEl = $("#brand-name");
   if (BRAND.logo && BRAND.logoIncludesName) {
     nameEl.className = "visually-hidden";   // keep for screen readers
