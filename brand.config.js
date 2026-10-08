@@ -21,10 +21,10 @@ export const BRAND = {
   // the image, so `label` is the only version a screen reader or a failed
   // image load will ever surface — keep it a faithful transcription.
   heroBadge: {
-    image: "/assets/promo-print-badge.png",
+    image: "/assets/promo-print-badge.webp",
     label: "The first 100 orders will receive an original, limited-edition "
          + "Hellbent print created and signed by renowned comic book artist "
-         + "Joe Madureira.",
+         + "Joe Madureira. Print shipped separately from order.",
   },
   logoIncludesName: true,          // wordmark already reads "HELLBENT"
   favicon: "/assets/favicon.png",

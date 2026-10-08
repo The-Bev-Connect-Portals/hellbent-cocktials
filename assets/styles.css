@@ -155,7 +155,7 @@ a { color: inherit; }
   /* Sized from the client mockup, where the artwork spans ~27% of the
      viewport. The previous 168px cap was fine for a compact stamp but renders
      this artwork's body copy at roughly 3px tall. */
-  width: clamp(260px, 27vw, 440px);
+  width: clamp(300px, 40vw, 600px);
   height: auto; display: block;
 }
 .hero__kicker {
@@ -924,7 +924,7 @@ body[data-drawer="open"] .help-panel { display: none; }
     margin-bottom: 0.65rem;
   }
   .hero { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
-  .hero__badge { width: 100%; max-width: 420px; margin-top: 0.25rem; }
+  .hero__badge { width: 100%; max-width: 560px; margin-top: 0.25rem; }
   .hero__title {
     font-size: clamp(2rem, 12vw, 3.25rem);
     line-height: 0.95;
