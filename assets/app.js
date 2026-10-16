@@ -157,6 +157,21 @@ function saveCart() {
   renderCart();
 }
 
+/* ── Meta Pixel events ───────────────────────────────────────
+   Base code + PageView live in index.html. These are the shopping events
+   that happen on THIS domain. Purchase is deliberately NOT fired here:
+   the order completes on Shopify, and the Facebook & Instagram channel on
+   the store sends Purchase (pixel + Conversions API). Firing it here too
+   would double-count. Never let tracking break the cart, hence try/catch.
+   content_ids are numeric Shopify variant IDs, matching the catalog the
+   Shopify channel syncs.
+   ──────────────────────────────────────────────────────────── */
+const vid = (gid) => String(gid || "").split("/").pop();
+function track(event, data) {
+  try { if (typeof window.fbq === "function") window.fbq("track", event, data); }
+  catch (err) { console.warn("[pixel]", err); }
+}
+
 function addToCart(product) {
   const variant = product.variants.find((v) => v.inStock) || product.variants[0];
   if (!variant) return;
@@ -172,6 +187,13 @@ function addToCart(product) {
     qty: 1,
   });
   saveCart();
+  track("AddToCart", {
+    content_ids: [vid(variant.id)],
+    content_name: product.title,
+    content_type: "product",
+    value: Number(variant.price.amount),
+    currency: variant.price.currencyCode || "USD",
+  });
 }
 
 function setQty(variantId, qty) {
@@ -609,7 +631,16 @@ async function checkout() {
     const url = result.cart?.checkoutUrl;
     if (!url) throw new Error("No checkout URL returned.");
 
-    window.location.href = url;
+    track("InitiateCheckout", {
+      content_ids: cart.map((l) => vid(l.variantId)),
+      content_type: "product",
+      num_items: cartCount(),
+      value: Number(cartTotal().toFixed(2)),
+      currency: cart[0]?.currency || "USD",
+    });
+    // fbq queues the request asynchronously; give it a beat to leave the
+    // page before navigating so the event isn't dropped on slow devices.
+    setTimeout(() => { window.location.href = url; }, 250);
   } catch (err) {
     const reach = BRAND.supportPhone
       ? `call us at ${BRAND.supportPhone}`
